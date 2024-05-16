@@ -54,3 +54,4 @@ __pycache__
 .idea/*
 playground/
 # TinyLLaVABench
+/venv
