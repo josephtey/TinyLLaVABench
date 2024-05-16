@@ -55,3 +55,4 @@ __pycache__
 playground/
 # TinyLLaVABench
 /venv
+/finetuning/pre-trained
