@@ -12,7 +12,7 @@ deepspeed tinyllava/train/train.py \
     --version phi \
     --data_path $DATA_PATH \
     --image_folder $IMAGE_PATH\
-    --vision_tower /piech/u/joetey/TinyLLaVABench/pre-trained/TinyLLaVA-3.1B-SigLIP \
+    --vision_tower /piech/u/joetey/TinyLLaVABench/finetuning/pre-trained/TinyLLaVA-3.1B-SigLIP \
     --mm_projector_type mlp2x_gelu \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
