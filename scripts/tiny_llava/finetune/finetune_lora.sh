@@ -8,11 +8,11 @@ OUTPUT_DIR="/piech/u/joetey/TinyLLaVABench/finetuning/output/TinyLLaVA-3.1B-lora
 deepspeed tinyllava/train/train.py \
     --deepspeed ./scripts/tiny_llava/zero3.json \
     --lora_enable True --lora_r 32 --lora_alpha 64 \
-    --model_name_or_path /root/autodl-tmp/TinyLLaVA-3.1B \
+    --model_name_or_path /piech/u/joetey/TinyLLaVABench/pre-trained/TinyLLaVA-3.1B \
     --version phi \
     --data_path $DATA_PATH \
     --image_folder $IMAGE_PATH\
-    --vision_tower /root/autodl-tmp/TinyLLaVA-3.1B-SigLIP \
+    --vision_tower /piech/u/joetey/TinyLLaVABench/pre-trained/TinyLLaVA-3.1B-SigLIP \
     --mm_projector_type mlp2x_gelu \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
