@@ -1,7 +1,7 @@
 [
   {
     "id": "HGAoNAxwVnW72v8NE2rQLV",
-    "image": "pokemon/image/HGAoNAxwVnW72v8NE2rQLV.jpg",
+    "image": "HGAoNAxwVnW72v8NE2rQLV.jpg",
     "conversations": [
       {
         "from": "human",
@@ -15,7 +15,7 @@
   },
   {
     "id": "cDGZ4rwDy5MW5p7NQpPaMp",
-    "image": "pokemon/image/cDGZ4rwDy5MW5p7NQpPaMp.jpg",
+    "image": "cDGZ4rwDy5MW5p7NQpPaMp.jpg",
     "conversations": [
       {
         "from": "human",
@@ -29,7 +29,7 @@
   },
   {
     "id": "4AhtrqzARBbCBTNskyuoKh",
-    "image": "pokemon/image/4AhtrqzARBbCBTNskyuoKh.jpg",
+    "image": "4AhtrqzARBbCBTNskyuoKh.jpg",
     "conversations": [
       {
         "from": "human",
@@ -43,7 +43,7 @@
   },
   {
     "id": "2kvsw373q7YTRK8SMQfR8t",
-    "image": "pokemon/image/2kvsw373q7YTRK8SMQfR8t.jpg",
+    "image": "2kvsw373q7YTRK8SMQfR8t.jpg",
     "conversations": [
       {
         "from": "human",
@@ -57,7 +57,7 @@
   },
   {
     "id": "Y8TKHT5TnPyjdJDN7XfLvb",
-    "image": "pokemon/image/Y8TKHT5TnPyjdJDN7XfLvb.jpg",
+    "image": "Y8TKHT5TnPyjdJDN7XfLvb.jpg",
     "conversations": [
       {
         "from": "human",
@@ -71,7 +71,7 @@
   },
   {
     "id": "hihhTU2BRdCe2rWXBdJU2K",
-    "image": "pokemon/image/hihhTU2BRdCe2rWXBdJU2K.jpg",
+    "image": "hihhTU2BRdCe2rWXBdJU2K.jpg",
     "conversations": [
       {
         "from": "human",
@@ -85,7 +85,7 @@
   },
   {
     "id": "J37ycWFuTQKgYAFEoHGZch",
-    "image": "pokemon/image/J37ycWFuTQKgYAFEoHGZch.jpg",
+    "image": "J37ycWFuTQKgYAFEoHGZch.jpg",
     "conversations": [
       {
         "from": "human",
@@ -99,7 +99,7 @@
   },
   {
     "id": "dR8haxWf8V3D2teNnA4W9x",
-    "image": "pokemon/image/dR8haxWf8V3D2teNnA4W9x.jpg",
+    "image": "dR8haxWf8V3D2teNnA4W9x.jpg",
     "conversations": [
       {
         "from": "human",
@@ -113,7 +113,7 @@
   },
   {
     "id": "gDUBZfd3D3f4MosK4kEmFq",
-    "image": "pokemon/image/gDUBZfd3D3f4MosK4kEmFq.jpg",
+    "image": "gDUBZfd3D3f4MosK4kEmFq.jpg",
     "conversations": [
       {
         "from": "human",
@@ -127,7 +127,7 @@
   },
   {
     "id": "HNByWN8hSkCDo2n5UCW699",
-    "image": "pokemon/image/HNByWN8hSkCDo2n5UCW699.jpg",
+    "image": "HNByWN8hSkCDo2n5UCW699.jpg",
     "conversations": [
       {
         "from": "human",
@@ -141,7 +141,7 @@
   },
   {
     "id": "GFya9mX8CbQ8Cdr7UH8yVs",
-    "image": "pokemon/image/GFya9mX8CbQ8Cdr7UH8yVs.jpg",
+    "image": "GFya9mX8CbQ8Cdr7UH8yVs.jpg",
     "conversations": [
       {
         "from": "human",
@@ -155,7 +155,7 @@
   },
   {
     "id": "AjSoTSoRPNMmKe6mZaYhF4",
-    "image": "pokemon/image/AjSoTSoRPNMmKe6mZaYhF4.jpg",
+    "image": "AjSoTSoRPNMmKe6mZaYhF4.jpg",
     "conversations": [
       {
         "from": "human",
@@ -169,7 +169,7 @@
   },
   {
     "id": "oTxZJv5gSuALcoxRTxqejg",
-    "image": "pokemon/image/oTxZJv5gSuALcoxRTxqejg.jpg",
+    "image": "oTxZJv5gSuALcoxRTxqejg.jpg",
     "conversations": [
       {
         "from": "human",
@@ -183,7 +183,7 @@
   },
   {
     "id": "Zn4iFHXLbeTs5yTTFy5qx8",
-    "image": "pokemon/image/Zn4iFHXLbeTs5yTTFy5qx8.jpg",
+    "image": "Zn4iFHXLbeTs5yTTFy5qx8.jpg",
     "conversations": [
       {
         "from": "human",
@@ -197,7 +197,7 @@
   },
   {
     "id": "gMaQqDHQFvPoUstUJVnbZJ",
-    "image": "pokemon/image/gMaQqDHQFvPoUstUJVnbZJ.jpg",
+    "image": "gMaQqDHQFvPoUstUJVnbZJ.jpg",
     "conversations": [
       {
         "from": "human",
@@ -211,7 +211,7 @@
   },
   {
     "id": "kZoiDRafuE3fnZ5wSFG5SE",
-    "image": "pokemon/image/kZoiDRafuE3fnZ5wSFG5SE.jpg",
+    "image": "kZoiDRafuE3fnZ5wSFG5SE.jpg",
     "conversations": [
       {
         "from": "human",
@@ -225,7 +225,7 @@
   },
   {
     "id": "epdPkuupQHqmaiMQ8NqRZW",
-    "image": "pokemon/image/epdPkuupQHqmaiMQ8NqRZW.jpg",
+    "image": "epdPkuupQHqmaiMQ8NqRZW.jpg",
     "conversations": [
       {
         "from": "human",
@@ -239,7 +239,7 @@
   },
   {
     "id": "NogLcv8m3e6SpkrySMBFUr",
-    "image": "pokemon/image/NogLcv8m3e6SpkrySMBFUr.jpg",
+    "image": "NogLcv8m3e6SpkrySMBFUr.jpg",
     "conversations": [
       {
         "from": "human",
@@ -253,7 +253,7 @@
   },
   {
     "id": "UcEKn33Jkr3Ep4p9oEfCQJ",
-    "image": "pokemon/image/UcEKn33Jkr3Ep4p9oEfCQJ.jpg",
+    "image": "UcEKn33Jkr3Ep4p9oEfCQJ.jpg",
     "conversations": [
       {
         "from": "human",
@@ -267,7 +267,7 @@
   },
   {
     "id": "4sHJJthyokHvorSxdfJU8S",
-    "image": "pokemon/image/4sHJJthyokHvorSxdfJU8S.jpg",
+    "image": "4sHJJthyokHvorSxdfJU8S.jpg",
     "conversations": [
       {
         "from": "human",
@@ -281,7 +281,7 @@
   },
   {
     "id": "hZ7vKJFJ6B9gq4Gzrm5Xvz",
-    "image": "pokemon/image/hZ7vKJFJ6B9gq4Gzrm5Xvz.jpg",
+    "image": "hZ7vKJFJ6B9gq4Gzrm5Xvz.jpg",
     "conversations": [
       {
         "from": "human",
@@ -295,7 +295,7 @@
   },
   {
     "id": "gJ8j39npk7J6pbSnsP9oBb",
-    "image": "pokemon/image/gJ8j39npk7J6pbSnsP9oBb.jpg",
+    "image": "gJ8j39npk7J6pbSnsP9oBb.jpg",
     "conversations": [
       {
         "from": "human",
@@ -309,7 +309,7 @@
   },
   {
     "id": "cJoGKxiejWEdU3FpFmE9De",
-    "image": "pokemon/image/cJoGKxiejWEdU3FpFmE9De.jpg",
+    "image": "cJoGKxiejWEdU3FpFmE9De.jpg",
     "conversations": [
       {
         "from": "human",
@@ -323,7 +323,7 @@
   },
   {
     "id": "RaNRvVF92ykpDanKvai3BL",
-    "image": "pokemon/image/RaNRvVF92ykpDanKvai3BL.jpg",
+    "image": "RaNRvVF92ykpDanKvai3BL.jpg",
     "conversations": [
       {
         "from": "human",
@@ -337,7 +337,7 @@
   },
   {
     "id": "QNVQHNmHmSA4KDYuGCtHsB",
-    "image": "pokemon/image/QNVQHNmHmSA4KDYuGCtHsB.jpg",
+    "image": "QNVQHNmHmSA4KDYuGCtHsB.jpg",
     "conversations": [
       {
         "from": "human",
@@ -351,7 +351,7 @@
   },
   {
     "id": "KRaQDShXQFiRGuJ8rNb7Nr",
-    "image": "pokemon/image/KRaQDShXQFiRGuJ8rNb7Nr.jpg",
+    "image": "KRaQDShXQFiRGuJ8rNb7Nr.jpg",
     "conversations": [
       {
         "from": "human",
@@ -365,7 +365,7 @@
   },
   {
     "id": "WWSodV6cBMUpZ4b4GVjjkN",
-    "image": "pokemon/image/WWSodV6cBMUpZ4b4GVjjkN.jpg",
+    "image": "WWSodV6cBMUpZ4b4GVjjkN.jpg",
     "conversations": [
       {
         "from": "human",
@@ -379,7 +379,7 @@
   },
   {
     "id": "TPZzXpmxVkjeWQhhbniAZQ",
-    "image": "pokemon/image/TPZzXpmxVkjeWQhhbniAZQ.jpg",
+    "image": "TPZzXpmxVkjeWQhhbniAZQ.jpg",
     "conversations": [
       {
         "from": "human",
@@ -393,7 +393,7 @@
   },
   {
     "id": "HKraLf5F8AnRBaqZR9YAfy",
-    "image": "pokemon/image/HKraLf5F8AnRBaqZR9YAfy.jpg",
+    "image": "HKraLf5F8AnRBaqZR9YAfy.jpg",
     "conversations": [
       {
         "from": "human",
@@ -407,7 +407,7 @@
   },
   {
     "id": "9gZDnu298ZuaXhdsH9MU97",
-    "image": "pokemon/image/9gZDnu298ZuaXhdsH9MU97.jpg",
+    "image": "9gZDnu298ZuaXhdsH9MU97.jpg",
     "conversations": [
       {
         "from": "human",
@@ -421,7 +421,7 @@
   },
   {
     "id": "cSpHw84ci3v6YWBEFre9Sc",
-    "image": "pokemon/image/cSpHw84ci3v6YWBEFre9Sc.jpg",
+    "image": "cSpHw84ci3v6YWBEFre9Sc.jpg",
     "conversations": [
       {
         "from": "human",
@@ -435,7 +435,7 @@
   },
   {
     "id": "9Y7ckZ5RYoWs7S2hn3Pk29",
-    "image": "pokemon/image/9Y7ckZ5RYoWs7S2hn3Pk29.jpg",
+    "image": "9Y7ckZ5RYoWs7S2hn3Pk29.jpg",
     "conversations": [
       {
         "from": "human",
@@ -449,7 +449,7 @@
   },
   {
     "id": "aMCVfLDnewfmx6bhuy7Vqv",
-    "image": "pokemon/image/aMCVfLDnewfmx6bhuy7Vqv.jpg",
+    "image": "aMCVfLDnewfmx6bhuy7Vqv.jpg",
     "conversations": [
       {
         "from": "human",
@@ -463,7 +463,7 @@
   },
   {
     "id": "KfZKyWZpBSvoazS6XCZ7Kj",
-    "image": "pokemon/image/KfZKyWZpBSvoazS6XCZ7Kj.jpg",
+    "image": "KfZKyWZpBSvoazS6XCZ7Kj.jpg",
     "conversations": [
       {
         "from": "human",
@@ -477,7 +477,7 @@
   },
   {
     "id": "YoaX94pybuUUF9isZrMnwk",
-    "image": "pokemon/image/YoaX94pybuUUF9isZrMnwk.jpg",
+    "image": "YoaX94pybuUUF9isZrMnwk.jpg",
     "conversations": [
       {
         "from": "human",
@@ -491,7 +491,7 @@
   },
   {
     "id": "PZKFEbB5ApKfJCoycNq5rK",
-    "image": "pokemon/image/PZKFEbB5ApKfJCoycNq5rK.jpg",
+    "image": "PZKFEbB5ApKfJCoycNq5rK.jpg",
     "conversations": [
       {
         "from": "human",
@@ -505,7 +505,7 @@
   },
   {
     "id": "nRFHuECb3kbdPUYEnx3idB",
-    "image": "pokemon/image/nRFHuECb3kbdPUYEnx3idB.jpg",
+    "image": "nRFHuECb3kbdPUYEnx3idB.jpg",
     "conversations": [
       {
         "from": "human",
@@ -519,7 +519,7 @@
   },
   {
     "id": "myuVeSZHQcMhn5VjpskNHP",
-    "image": "pokemon/image/myuVeSZHQcMhn5VjpskNHP.jpg",
+    "image": "myuVeSZHQcMhn5VjpskNHP.jpg",
     "conversations": [
       {
         "from": "human",
@@ -533,7 +533,7 @@
   },
   {
     "id": "U7bL4kE9KJk3A9who5a6he",
-    "image": "pokemon/image/U7bL4kE9KJk3A9who5a6he.jpg",
+    "image": "U7bL4kE9KJk3A9who5a6he.jpg",
     "conversations": [
       {
         "from": "human",
@@ -547,7 +547,7 @@
   },
   {
     "id": "cdJrCXAJxw3MpsghN3nsq9",
-    "image": "pokemon/image/cdJrCXAJxw3MpsghN3nsq9.jpg",
+    "image": "cdJrCXAJxw3MpsghN3nsq9.jpg",
     "conversations": [
       {
         "from": "human",
@@ -561,7 +561,7 @@
   },
   {
     "id": "KHjB8wGGabPfys4hojWaZ4",
-    "image": "pokemon/image/KHjB8wGGabPfys4hojWaZ4.jpg",
+    "image": "KHjB8wGGabPfys4hojWaZ4.jpg",
     "conversations": [
       {
         "from": "human",
@@ -575,7 +575,7 @@
   },
   {
     "id": "YLS4ytdp82SZvVnxyxiZXK",
-    "image": "pokemon/image/YLS4ytdp82SZvVnxyxiZXK.jpg",
+    "image": "YLS4ytdp82SZvVnxyxiZXK.jpg",
     "conversations": [
       {
         "from": "human",
@@ -589,7 +589,7 @@
   },
   {
     "id": "NDxysYb7NrRnBMQwusDipf",
-    "image": "pokemon/image/NDxysYb7NrRnBMQwusDipf.jpg",
+    "image": "NDxysYb7NrRnBMQwusDipf.jpg",
     "conversations": [
       {
         "from": "human",
@@ -603,7 +603,7 @@
   },
   {
     "id": "E9gU5CUMtHZePboCyg3P2V",
-    "image": "pokemon/image/E9gU5CUMtHZePboCyg3P2V.jpg",
+    "image": "E9gU5CUMtHZePboCyg3P2V.jpg",
     "conversations": [
       {
         "from": "human",
@@ -617,7 +617,7 @@
   },
   {
     "id": "UrfGCaDvuPxBhyzoj2CCqz",
-    "image": "pokemon/image/UrfGCaDvuPxBhyzoj2CCqz.jpg",
+    "image": "UrfGCaDvuPxBhyzoj2CCqz.jpg",
     "conversations": [
       {
         "from": "human",
@@ -631,7 +631,7 @@
   },
   {
     "id": "8GEcpeAGaweVeL9CW6LrUx",
-    "image": "pokemon/image/8GEcpeAGaweVeL9CW6LrUx.jpg",
+    "image": "8GEcpeAGaweVeL9CW6LrUx.jpg",
     "conversations": [
       {
         "from": "human",
@@ -645,7 +645,7 @@
   },
   {
     "id": "en2vQgLnCjozFAusmmW6NU",
-    "image": "pokemon/image/en2vQgLnCjozFAusmmW6NU.jpg",
+    "image": "en2vQgLnCjozFAusmmW6NU.jpg",
     "conversations": [
       {
         "from": "human",
@@ -659,7 +659,7 @@
   },
   {
     "id": "G6GeMhRBd2qeyDzQVujrdy",
-    "image": "pokemon/image/G6GeMhRBd2qeyDzQVujrdy.jpg",
+    "image": "G6GeMhRBd2qeyDzQVujrdy.jpg",
     "conversations": [
       {
         "from": "human",
@@ -673,7 +673,7 @@
   },
   {
     "id": "k9udXSCZpF7vLtMmbyYdmK",
-    "image": "pokemon/image/k9udXSCZpF7vLtMmbyYdmK.jpg",
+    "image": "k9udXSCZpF7vLtMmbyYdmK.jpg",
     "conversations": [
       {
         "from": "human",
@@ -687,7 +687,7 @@
   },
   {
     "id": "WAoTnLZsQmDigh8Jp56AKv",
-    "image": "pokemon/image/WAoTnLZsQmDigh8Jp56AKv.jpg",
+    "image": "WAoTnLZsQmDigh8Jp56AKv.jpg",
     "conversations": [
       {
         "from": "human",
@@ -701,7 +701,7 @@
   },
   {
     "id": "CUPrUeJzcwjNbobKTfvydR",
-    "image": "pokemon/image/CUPrUeJzcwjNbobKTfvydR.jpg",
+    "image": "CUPrUeJzcwjNbobKTfvydR.jpg",
     "conversations": [
       {
         "from": "human",
@@ -715,7 +715,7 @@
   },
   {
     "id": "FisGvXXendNTbeVKFYKtZQ",
-    "image": "pokemon/image/FisGvXXendNTbeVKFYKtZQ.jpg",
+    "image": "FisGvXXendNTbeVKFYKtZQ.jpg",
     "conversations": [
       {
         "from": "human",
@@ -729,7 +729,7 @@
   },
   {
     "id": "AUTufZETQXZhtnKf59PJLh",
-    "image": "pokemon/image/AUTufZETQXZhtnKf59PJLh.jpg",
+    "image": "AUTufZETQXZhtnKf59PJLh.jpg",
     "conversations": [
       {
         "from": "human",
@@ -743,7 +743,7 @@
   },
   {
     "id": "2rCt5qNu9FEnsvt7qANdJU",
-    "image": "pokemon/image/2rCt5qNu9FEnsvt7qANdJU.jpg",
+    "image": "2rCt5qNu9FEnsvt7qANdJU.jpg",
     "conversations": [
       {
         "from": "human",
@@ -757,7 +757,7 @@
   },
   {
     "id": "24SuNkD6jhY7AMTEJccQgF",
-    "image": "pokemon/image/24SuNkD6jhY7AMTEJccQgF.jpg",
+    "image": "24SuNkD6jhY7AMTEJccQgF.jpg",
     "conversations": [
       {
         "from": "human",
@@ -771,7 +771,7 @@
   },
   {
     "id": "YK2HwCKbyiZWVfq5uWy47s",
-    "image": "pokemon/image/YK2HwCKbyiZWVfq5uWy47s.jpg",
+    "image": "YK2HwCKbyiZWVfq5uWy47s.jpg",
     "conversations": [
       {
         "from": "human",
@@ -785,7 +785,7 @@
   },
   {
     "id": "iwApP2nozjN4HZ3uzEEHQa",
-    "image": "pokemon/image/iwApP2nozjN4HZ3uzEEHQa.jpg",
+    "image": "iwApP2nozjN4HZ3uzEEHQa.jpg",
     "conversations": [
       {
         "from": "human",
@@ -799,7 +799,7 @@
   },
   {
     "id": "DgH6h2tWtzLxaiQQtDJBBH",
-    "image": "pokemon/image/DgH6h2tWtzLxaiQQtDJBBH.jpg",
+    "image": "DgH6h2tWtzLxaiQQtDJBBH.jpg",
     "conversations": [
       {
         "from": "human",
@@ -813,7 +813,7 @@
   },
   {
     "id": "9Wb7NRDKe63m3wHnNWpXCk",
-    "image": "pokemon/image/9Wb7NRDKe63m3wHnNWpXCk.jpg",
+    "image": "9Wb7NRDKe63m3wHnNWpXCk.jpg",
     "conversations": [
       {
         "from": "human",
@@ -827,7 +827,7 @@
   },
   {
     "id": "TmGhHTPDDdayk46PpxuPqE",
-    "image": "pokemon/image/TmGhHTPDDdayk46PpxuPqE.jpg",
+    "image": "TmGhHTPDDdayk46PpxuPqE.jpg",
     "conversations": [
       {
         "from": "human",
@@ -841,7 +841,7 @@
   },
   {
     "id": "CFMCWnvmPwF4Z73pUFcSpQ",
-    "image": "pokemon/image/CFMCWnvmPwF4Z73pUFcSpQ.jpg",
+    "image": "CFMCWnvmPwF4Z73pUFcSpQ.jpg",
     "conversations": [
       {
         "from": "human",
@@ -855,7 +855,7 @@
   },
   {
     "id": "ZTaUp5TjnWUmCnmUccUyME",
-    "image": "pokemon/image/ZTaUp5TjnWUmCnmUccUyME.jpg",
+    "image": "ZTaUp5TjnWUmCnmUccUyME.jpg",
     "conversations": [
       {
         "from": "human",
@@ -869,7 +869,7 @@
   },
   {
     "id": "HheM6F2Tv83sZb66DMVEWg",
-    "image": "pokemon/image/HheM6F2Tv83sZb66DMVEWg.jpg",
+    "image": "HheM6F2Tv83sZb66DMVEWg.jpg",
     "conversations": [
       {
         "from": "human",
