@@ -67,7 +67,7 @@ def eval_model(args):
 
     results = []
 
-    for item in data:
+    for index, item in enumerate(data):
         qs = args.query
         image_token_se = (
             DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN
@@ -126,6 +126,8 @@ def eval_model(args):
             outputs = outputs[: -len(stop_str)]
         outputs = outputs.strip()
 
+        print(f"Item: {index}")
+        print(outputs)
         item["predicted_answer"] = outputs
         results.append(item)
 
@@ -141,7 +143,7 @@ if __name__ == "__main__":
     parser.add_argument("--data-file", type=str, required=True)
     parser.add_argument("--image-folder", type=str, required=True)
     parser.add_argument("--query", type=str, required=True)
-    parser.add_argument("--conv-mode", type=str, default=None)
+    parser.add_argument("--conv-mode", type=str, default="phi")
     parser.add_argument("--sep", type=str, default=",")
     parser.add_argument("--temperature", type=float, default=0.2)
     parser.add_argument("--top_p", type=float, default=None)
