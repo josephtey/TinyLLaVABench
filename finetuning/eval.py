@@ -1,5 +1,7 @@
 import argparse
 import torch
+import json
+import os
 
 from tinyllava.constants import (
     IMAGE_TOKEN_INDEX,
@@ -57,73 +59,87 @@ def eval_model(args):
         args.model_path, args.model_base, model_name
     )
 
-    qs = args.query
-    image_token_se = DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN
-    if IMAGE_PLACEHOLDER in qs:
-        if model.config.mm_use_im_start_end:
-            qs = re.sub(IMAGE_PLACEHOLDER, image_token_se, qs)
+    data_file = args.data_file
+
+    # Load data file
+    with open(data_file, "r") as f:
+        data = json.load(f)
+
+    results = []
+
+    for item in data:
+        qs = args.query
+        image_token_se = (
+            DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN
+        )
+        if IMAGE_PLACEHOLDER in qs:
+            if model.config.mm_use_im_start_end:
+                qs = re.sub(IMAGE_PLACEHOLDER, image_token_se, qs)
+            else:
+                qs = re.sub(IMAGE_PLACEHOLDER, DEFAULT_IMAGE_TOKEN, qs)
         else:
-            qs = re.sub(IMAGE_PLACEHOLDER, DEFAULT_IMAGE_TOKEN, qs)
-    else:
-        if model.config.mm_use_im_start_end:
-            qs = image_token_se + "\n" + qs
-        else:
-            qs = DEFAULT_IMAGE_TOKEN + "\n" + qs
+            if model.config.mm_use_im_start_end:
+                qs = image_token_se + "\n" + qs
+            else:
+                qs = DEFAULT_IMAGE_TOKEN + "\n" + qs
 
-    conv = conv_templates[args.conv_mode].copy()
-    conv.append_message(conv.roles[0], qs)
-    conv.append_message(conv.roles[1], None)
-    prompt = conv.get_prompt()
+        conv = conv_templates[args.conv_mode].copy()
+        conv.append_message(conv.roles[0], qs)
+        conv.append_message(conv.roles[1], None)
+        prompt = conv.get_prompt()
 
-    image_files = image_parser(args)
-    images = load_images(image_files)
-    images_tensor = process_images(images, image_processor, model.config).to(
-        model.device, dtype=torch.float16
-    )
-
-    input_ids = (
-        tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt")
-        .unsqueeze(0)
-        .cuda()
-    )
-
-    stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
-    keywords = [stop_str]
-    stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
-
-    with torch.inference_mode():
-        output_ids = model.generate(
-            input_ids,
-            images=images_tensor,
-            do_sample=True if args.temperature > 0 else False,
-            temperature=args.temperature,
-            top_p=args.top_p,
-            num_beams=args.num_beams,
-            pad_token_id=tokenizer.pad_token_id,
-            max_new_tokens=args.max_new_tokens,
-            use_cache=True,
-            stopping_criteria=[stopping_criteria],
+        image_file = os.path.join(args.image_folder, item["image"])
+        image = load_image(image_file)
+        images_tensor = process_images([image], image_processor, model.config).to(
+            model.device, dtype=torch.float16
         )
 
-    # input_token_len = input_ids.shape[1]
-    # n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
-    # if n_diff_input_output > 0:
-    #     print(
-    #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
-    #     )
-    outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
-    outputs = outputs.strip()
-    if outputs.endswith(stop_str):
-        outputs = outputs[: -len(stop_str)]
-    outputs = outputs.strip()
-    print(outputs)
+        input_ids = (
+            tokenizer_image_token(
+                prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt"
+            )
+            .unsqueeze(0)
+            .cuda()
+        )
+
+        stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
+        keywords = [stop_str]
+        stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
+
+        with torch.inference_mode():
+            output_ids = model.generate(
+                input_ids,
+                images=images_tensor,
+                do_sample=True if args.temperature > 0 else False,
+                temperature=args.temperature,
+                top_p=args.top_p,
+                num_beams=args.num_beams,
+                pad_token_id=tokenizer.pad_token_id,
+                max_new_tokens=args.max_new_tokens,
+                use_cache=True,
+                stopping_criteria=[stopping_criteria],
+            )
+
+        outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
+        outputs = outputs.strip()
+        if outputs.endswith(stop_str):
+            outputs = outputs[: -len(stop_str)]
+        outputs = outputs.strip()
+
+        item["predicted_answer"] = outputs
+        results.append(item)
+
+    # Write results to a file
+    with open("results.json", "w") as f:
+        json.dump(results, f, indent=4)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", type=str, default="facebook/opt-350m")
     parser.add_argument("--model-base", type=str, default=None)
-    parser.add_argument("--image-file", type=str, required=True)
+    parser.add_argument("--data-file", type=str, required=True)
+    parser.add_argument("--image-folder", type=str, required=True)
     parser.add_argument("--query", type=str, required=True)
     parser.add_argument("--conv-mode", type=str, default=None)
     parser.add_argument("--sep", type=str, default=",")
