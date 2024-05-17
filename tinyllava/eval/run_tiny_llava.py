@@ -131,7 +131,9 @@ def eval_model(args):
     #     print(
     #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
     #     )
-    outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
+    raw_outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+    print(raw_outputs)
+    outputs = raw_outputs[0]
     outputs = outputs.strip()
     if outputs.endswith(stop_str):
         outputs = outputs[: -len(stop_str)]
