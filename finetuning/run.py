@@ -7,8 +7,8 @@ pretrained_model_path = (
     "/piech/u/joetey/TinyLLaVABench/finetuning/pre-trained/TinyLLaVA-3.1B"
 )
 lora_model_path = "/piech/u/joetey/TinyLLaVABench/finetuning/output/TinyLLaVA-3.1B-lora"
-image_path = "2Ap9EEd8geGLDT6UQpjHGd.jpg"  # Update with your image path
-image_file = "https://llava-vl.github.io/static/images/view.jpg"
+image_path = "images/2Ap9EEd8geGLDT6UQpjHGd.jpg"  # Update with your image path
+# image_file = "https://llava-vl.github.io/static/images/view.jpg"
 prompt = "What is this?"
 
 args = type(
