@@ -70,26 +70,6 @@ def eval_model(args):
         else:
             qs = DEFAULT_IMAGE_TOKEN + "\n" + qs
 
-    # if 'phi' in model_name.lower() or '3.1b' in model_name.lower():
-    #     conv_mode = "phi"
-    # if "llama-2" in model_name.lower():
-    #     conv_mode = "llava_llama_2"
-    # elif "v1" in model_name.lower():
-    #     conv_mode = "llava_v1"
-    # elif "mpt" in model_name.lower():
-    #     conv_mode = "mpt"
-    # else:
-    #     conv_mode = "llava_v0"
-    #
-    # if args.conv_mode is not None and conv_mode != args.conv_mode:
-    #     print(
-    #         "[WARNING] the auto inferred conversation mode is {}, while `--conv-mode` is {}, using {}".format(
-    #             conv_mode, args.conv_mode, args.conv_mode
-    #         )
-    #     )
-    # else:
-    # args.conv_mode = conv_mode
-
     conv = conv_templates[args.conv_mode].copy()
     conv.append_message(conv.roles[0], qs)
     conv.append_message(conv.roles[1], None)

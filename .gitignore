@@ -56,3 +56,6 @@ playground/
 # TinyLLaVABench
 /venv
 /finetuning/pre-trained
+/finetuning/output
+/finetuning/mathverse/images
+
