@@ -68,7 +68,11 @@ def eval_model(args):
     results = []
 
     for index, item in enumerate(data):
-        qs = args.query
+        if item["question_type"] == "multi-choice":
+            qs = "According to the question shown in the image, please directly answer the question and provide the correct option letter, e.g., A, B, C, D."
+        elif item["question_type"] == "free-form":
+            qs = "According to the question shown in the image, please directly answer the question and provide the final value, e.g., 1, 2.5, 300."
+
         image_token_se = (
             DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN
         )
