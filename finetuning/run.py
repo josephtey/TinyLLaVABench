@@ -17,7 +17,6 @@ args = type(
     {
         "model_path": lora_model_path,
         "model_base": pretrained_model_path,
-        "model_name": get_model_name_from_path(pretrained_model_path),
         "query": prompt,
         "conv_mode": "phi",
         "image_file": image_file,
@@ -30,3 +29,22 @@ args = type(
 )()
 
 eval_model(args)
+
+args_2 = type(
+    "Args",
+    (),
+    {
+        "model_path": pretrained_model_path,
+        "model_base": None,
+        "query": prompt,
+        "conv_mode": "phi",
+        "image_file": image_file,
+        "sep": ",",
+        "temperature": 0,
+        "top_p": None,
+        "num_beams": 1,
+        "max_new_tokens": 512,
+    },
+)()
+
+eval_model(args_2)
