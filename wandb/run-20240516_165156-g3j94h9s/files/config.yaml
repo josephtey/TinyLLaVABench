@@ -12,73 +12,73 @@ _wandb:
     start_time: 1715903516
     t:
       1:
-      - 1
-      - 5
-      - 11
-      - 49
-      - 53
-      - 55
-      - 71
-      - 98
-      - 105
+        - 1
+        - 5
+        - 11
+        - 49
+        - 53
+        - 55
+        - 71
+        - 98
+        - 105
       2:
-      - 1
-      - 5
-      - 11
-      - 49
-      - 53
-      - 55
-      - 71
-      - 98
-      - 105
+        - 1
+        - 5
+        - 11
+        - 49
+        - 53
+        - 55
+        - 71
+        - 98
+        - 105
       3:
-      - 7
-      - 23
-      - 66
+        - 7
+        - 23
+        - 66
       4: 3.10.14
       5: 0.17.0
       6: 4.37.2
       8:
-      - 5
+        - 5
       9:
         1: transformers_trainer
       13: linux-x86_64
     m:
-    - 1: train/global_step
-      6:
-      - 3
-    - 1: train/loss
-      5: 1
-      6:
-      - 1
-    - 1: train/learning_rate
-      5: 1
-      6:
-      - 1
-    - 1: train/epoch
-      5: 1
-      6:
-      - 1
-    - 1: train/train_runtime
-      5: 1
-      6:
-      - 1
-    - 1: train/train_samples_per_second
-      5: 1
-      6:
-      - 1
-    - 1: train/train_steps_per_second
-      5: 1
-      6:
-      - 1
-    - 1: train/total_flos
-      5: 1
-      6:
-      - 1
-    - 1: train/train_loss
-      5: 1
-      6:
-      - 1
+      - 1: train/global_step
+        6:
+          - 3
+      - 1: train/loss
+        5: 1
+        6:
+          - 1
+      - 1: train/learning_rate
+        5: 1
+        6:
+          - 1
+      - 1: train/epoch
+        5: 1
+        6:
+          - 1
+      - 1: train/train_runtime
+        5: 1
+        6:
+          - 1
+      - 1: train/train_samples_per_second
+        5: 1
+        6:
+          - 1
+      - 1: train/train_steps_per_second
+        5: 1
+        6:
+          - 1
+      - 1: train/total_flos
+        5: 1
+        6:
+          - 1
+      - 1: train/train_loss
+        5: 1
+        6:
+          - 1
 vocab_size:
   desc: null
   value: 51200
@@ -256,15 +256,15 @@ begin_suppress_tokens:
 architectures:
   desc: null
   value:
-  - TinyLlavaPhiForCausalLM
+    - TinyLlavaPhiForCausalLM
 finetuning_task:
   desc: null
   value: null
 id2label:
   desc: null
   value:
-    '0': LABEL_0
-    '1': LABEL_1
+    "0": LABEL_0
+    "1": LABEL_1
 label2id:
   desc: null
   value:
@@ -337,7 +337,7 @@ mm_vision_select_layer:
   value: -2
 mm_vision_tower:
   desc: null
-  value: /piech/u/joetey/TinyLLaVABench/finetuning/pre-trained/TinyLLaVA-3.1B-SigLIP
+  value: /piech/u/joetey/TinyLLaVABench/custom/pre-trained/TinyLLaVA-3.1B-SigLIP
 model_type:
   desc: null
   value: tiny_llava_phi
@@ -385,7 +385,7 @@ do_predict:
   value: false
 evaluation_strategy:
   desc: null
-  value: 'no'
+  value: "no"
 prediction_loss_only:
   desc: null
   value: false
@@ -620,7 +620,7 @@ length_column_name:
 report_to:
   desc: null
   value:
-  - wandb
+    - wandb
 ddp_find_unused_parameters:
   desc: null
   value: null
@@ -686,7 +686,7 @@ push_to_hub_token:
   value: <PUSH_TO_HUB_TOKEN>
 mp_parameters:
   desc: null
-  value: ''
+  value: ""
 auto_find_batch_size:
   desc: null
   value: false
@@ -758,7 +758,7 @@ lora_dropout:
   value: 0.05
 lora_weight_path:
   desc: null
-  value: ''
+  value: ""
 lora_bias:
   desc: null
   value: none
