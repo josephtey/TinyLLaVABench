@@ -299,7 +299,7 @@ problem_type:
   value: null
 _name_or_path:
   desc: null
-  value: /piech/u/joetey/TinyLLaVABench/finetuning/pre-trained/TinyLLaVA-3.1B
+  value: /piech/u/joetey/TinyLLaVABench/custom/checkpoints/pre-trained/TinyLLaVA-3.1B
 transformers_version:
   desc: null
   value: 4.37.2
@@ -337,7 +337,7 @@ mm_vision_select_layer:
   value: -2
 mm_vision_tower:
   desc: null
-  value: /piech/u/joetey/TinyLLaVABench/custom/pre-trained/TinyLLaVA-3.1B-SigLIP
+  value: /piech/u/joetey/TinyLLaVABench/custom/checkpoints/pre-trained/TinyLLaVA-3.1B-SigLIP
 model_type:
   desc: null
   value: tiny_llava_phi

@@ -4,7 +4,7 @@ from tinyllava.eval.run_tiny_llava import eval_model
 
 # Paths
 pretrained_model_path = (
-    "/piech/u/joetey/TinyLLaVABench/finetuning/pre-trained/TinyLLaVA-3.1B"
+    "/piech/u/joetey/TinyLLaVABench/custom/checkpoints/pre-trained/TinyLLaVA-3.1B"
 )
 lora_model_path = "/piech/u/joetey/TinyLLaVABench/finetuning/output/TinyLLaVA-3.1B-lora"
 image_file = "images/2Ap9EEd8geGLDT6UQpjHGd.jpg,images/2aTMvJD8vdRaiFPYxh9Wte.jpg"  # Update with your image path
