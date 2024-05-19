@@ -5,13 +5,13 @@ DATA_FILE="./../../../multimodal-reasoning/dataset/eval/mathverse/mathverse_visu
 IMAGE_FOLDER="./../../../multimodal-reasoning/dataset/eval/mathverse/images"
 
 # pretrained model
-MODEL_BASE="./../checkpoints/pre-trained/TinyLLaVA-3.1B"
+MODEL_BASE="../checkpoints/pre-trained/TinyLLaVA-3.1B"
 
 # finetuned model
-MODEL_PATH="./../checkpoints/fine-tuned/TinyLLaVA-3.1B-lora"
+MODEL_PATH="../checkpoints/fine-tuned/TinyLLaVA-3.1B-lora"
 
 # results file
-RESULTS_FILE="./../../../multimodal-reasoning/results/files/results_$(date +%Y%m%d_%H%M%S).json"
+RESULTS_FILE="../../../multimodal-reasoning/results/files/results_$(date +%Y%m%d_%H%M%S).json"
 
 python -m eval \
     --image-folder $IMAGE_FOLDER$ \
