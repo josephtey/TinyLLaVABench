@@ -14,9 +14,10 @@ MODEL_PATH="./../checkpoints/finetuned/TinyLLaVA-3.1B-lora"
 RESULTS_FILE="./../../multimodal-reasoning/results/files/results_$(date +%Y%m%d_%H%M%S).json"
 
 python -m eval \
-    --image_folder $IMAGE_FOLDER$ \
+    --image-folder $IMAGE_FOLDER$ \
     --data-file $DATA_FILE$ \
     --model-base $MODEL_BASE \
     --model-path $MODEL_PATH \
+    --results-file $RESULTS_FILE \
     --temperature 0 \
     --conv-mode phi

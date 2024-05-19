@@ -147,7 +147,7 @@ if __name__ == "__main__":
     parser.add_argument("--data-file", type=str, required=True)
     parser.add_argument("--image-folder", type=str, required=True)
     parser.add_argument("--results-file", type=str, required=True)
-    parser.add_argument("--query", type=str, required=True)
+    parser.add_argument("--query", type=str, required=False)
     parser.add_argument("--conv-mode", type=str, default="phi")
     parser.add_argument("--sep", type=str, default=",")
     parser.add_argument("--temperature", type=float, default=0.2)
