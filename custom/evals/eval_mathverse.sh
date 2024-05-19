@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # data
-DATA_FILE = "./../../multimodal-reasoning/dataset/eval/mathverse/mathverse_visual_only.json"
-IMAGE_FOLDER = "./../../multimodal-reasoning/dataset/eval/mathverse/images"
+DATA_FILE="./../../multimodal-reasoning/dataset/eval/mathverse/mathverse_visual_only.json"
+IMAGE_FOLDER="./../../multimodal-reasoning/dataset/eval/mathverse/images"
 
 # pretrained model
 MODEL_BASE="./../checkpoints/pre-trained/TinyLLaVA-3.1B"
