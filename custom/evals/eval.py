@@ -61,6 +61,10 @@ def eval_model(args):
 
     data_file = args.data_file
 
+    import os
+
+    print("Current directory:", os.getcwd())
+
     # Load data file
     with open(data_file, "r") as f:
         data = json.load(f)
