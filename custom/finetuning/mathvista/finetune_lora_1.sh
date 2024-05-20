@@ -5,7 +5,7 @@ DATA_PATH="/piech/u/joetey/multimodal-reasoning/dataset/training/geometry_3k/geo
 IMAGE_PATH="/piech/u/joetey/multimodal-reasoning/dataset/training/geometry_3k/images/"
 OUTPUT_DIR="/piech/u/joetey/TinyLLaVABench/custom/checkpoints/fine-tuned/mathvista/TinyLLaVA-3.1B-1"
 
-deepspeed tinyllava/train/train.py \
+deepspeed ./../tinyllava/train/train.py \
     --deepspeed ./scripts/tiny_llava/zero3.json \
     --lora_enable True --lora_r 32 --lora_alpha 64 \
     --model_name_or_path /piech/u/joetey/TinyLLaVABench/custom/checkpoints/pre-trained/TinyLLaVA-3.1B \
