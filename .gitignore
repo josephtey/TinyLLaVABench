@@ -56,4 +56,5 @@ playground/
 # TinyLLaVABench
 /venv
 /custom/checkpoints
+.env
 

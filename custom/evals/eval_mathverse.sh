@@ -8,7 +8,7 @@ IMAGE_FOLDER="./../../../multimodal-reasoning/dataset/eval/mathverse/images"
 MODEL_BASE="./../checkpoints/pre-trained/TinyLLaVA-3.1B"
 
 # finetuned model
-MODEL_PATH="./../checkpoints/fine-tuned/TinyLLaVA-3.1B-lora"
+MODEL_PATH="./../checkpoints/fine-tuned/mathvista/TinyLLaVA-3.1B-1"
 
 # results file
 RESULTS_FILE="./../../../multimodal-reasoning/results/files/results_$(date +%Y%m%d_%H%M%S).json"

@@ -6,9 +6,6 @@ import os
 from tinyllava.constants import (
     IMAGE_TOKEN_INDEX,
     DEFAULT_IMAGE_TOKEN,
-    DEFAULT_IM_START_TOKEN,
-    DEFAULT_IM_END_TOKEN,
-    IMAGE_PLACEHOLDER,
 )
 from tinyllava.conversation import conv_templates, SeparatorStyle
 from tinyllava.model.builder import load_pretrained_model
@@ -25,7 +22,11 @@ from PIL import Image
 import requests
 from PIL import Image
 from io import BytesIO
-import re
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def image_parser(args):
@@ -61,35 +62,26 @@ def eval_model(args):
 
     data_file = args.data_file
 
-    import os
-
-    print("Current directory:", os.getcwd())
-
     # Load data file
     with open(data_file, "r") as f:
         data = json.load(f)
 
     results = []
+    running_cost = 0
+
+    # Initialize results file with an opening bracket
+    with open(args.results_file, "w") as f:
+        f.write("[\n")
 
     for index, item in enumerate(data):
         if item["question_type"] == "multi-choice":
-            qs = "According to the question shown in the image, please directly answer the question and provide the correct option letter, e.g., A, B, C, D."
+            qs = f"""Solve this problem, and return the answer at the end of your response, e.g. Answer: A, B, C or D\n
+                    Problem: {DEFAULT_IMAGE_TOKEN}\n
+                    {item['question'] if 'question' in item and item['question'] else ''}\n"""
         elif item["question_type"] == "free-form":
-            qs = "According to the question shown in the image, please directly answer the question and provide the final value, e.g., 1, 2.5, 300."
-
-        image_token_se = (
-            DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN
-        )
-        if IMAGE_PLACEHOLDER in qs:
-            if model.config.mm_use_im_start_end:
-                qs = re.sub(IMAGE_PLACEHOLDER, image_token_se, qs)
-            else:
-                qs = re.sub(IMAGE_PLACEHOLDER, DEFAULT_IMAGE_TOKEN, qs)
-        else:
-            if model.config.mm_use_im_start_end:
-                qs = image_token_se + "\n" + qs
-            else:
-                qs = DEFAULT_IMAGE_TOKEN + "\n" + qs
+            qs = f"""Solve this problem, and return the answer at the end of your response, e.g. Answer: 1, 2.5, 300.\n
+                    Problem: {DEFAULT_IMAGE_TOKEN}\n
+                    {item['question'] if 'question' in item and item['question'] else ''}\n"""
 
         conv = conv_templates[args.conv_mode].copy()
         conv.append_message(conv.roles[0], qs)
@@ -134,14 +126,70 @@ def eval_model(args):
             outputs = outputs[: -len(stop_str)]
         outputs = outputs.strip()
 
-        print(f"Item: {index}")
-        print(outputs)
+        # Answer Extraction
+        if item["question_type"] == "free-form":
+            prompt = f"""I will give you a problem, and a detailed answer to that problem.
+
+            You will extract the free-form answer (e.g. 2, 150.1, 300) from the detailed answer to the problem.
+            
+            Problem: {item['question']}
+            Detailed Answer: {outputs}
+
+            Free-Form Answer:"""
+        elif item["question_type"] == "multi-choice":
+            prompt = f"""I will give you a problem, and a detailed answer to that problem.
+
+            You will extract the letter answer (A, B, C or D) from the detailed answer to the problem.
+            
+            Problem: {item['question']}
+            Detailed Answer: {outputs}
+
+            Letter Answer:"""
+
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user", "content": prompt},
+            ],
+        )
+
+        # Extract token usage from the response
+        total_tokens = response.usage.total_tokens
+        input_tokens = response.usage.prompt_tokens
+        output_tokens = response.usage.completion_tokens
+
+        cost_per_million_input_tokens = 5  # $5 per 1 million input tokens
+        cost_per_million_output_tokens = 15  # $15 per 1 million output tokens
+
+        input_cost = (input_tokens / 1_000_000) * cost_per_million_input_tokens
+        output_cost = (output_tokens / 1_000_000) * cost_per_million_output_tokens
+        total_cost = input_cost + output_cost
+
+        # Update running cost
+        running_cost += total_cost
+
+        # get answer
+        extracted_answer = response.choices[0].message.content
+
+        print("Item: ", item)
+        print("Detailed Answer: ", outputs)
+        print("Extracted Answer: ", extracted_answer)
+        print("Running Cost: ", running_cost)
+        print()  # Add a line break
+
         item["predicted_answer"] = outputs
+        item["extracted_answer"] = extracted_answer
         results.append(item)
 
-    # Write results to a file
-    with open(args.results_file, "w") as f:
-        json.dump(results, f, indent=4)
+        # Append result to file
+        with open(args.results_file, "a") as f:
+            json.dump(item, f, indent=4)
+            if index < len(data) - 1:
+                f.write(",\n")
+
+    # Close the JSON array in the results file
+    with open(args.results_file, "a") as f:
+        f.write("\n]")
 
 
 if __name__ == "__main__":
