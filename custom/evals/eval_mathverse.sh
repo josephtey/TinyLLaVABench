@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # data
-DATA_FILE="./../../../multimodal-reasoning/dataset/eval/mathverse/mathverse_visual_only.json"
+DATA_FILE="./../../../multimodal-reasoning/dataset/eval/mathverse/mathverse.json"
 IMAGE_FOLDER="./../../../multimodal-reasoning/dataset/eval/mathverse/images"
 
 # pretrained model
