@@ -101,7 +101,7 @@ def eval_model(args):
         conv.append_message(conv.roles[1], None)
         prompt = conv.get_prompt()
 
-        image_file = os.path.join(args.image_folder, item["image"] + ".png")
+        image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
         image = load_image(image_file)
         images_tensor = process_images([image], image_processor, model.config).to(
             model.device, dtype=torch.float16
