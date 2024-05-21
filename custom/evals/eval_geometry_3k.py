@@ -78,7 +78,6 @@ def eval_model(args):
         choices_str = ", ".join(
             [f"{chr(65 + i)}. {choice}" for i, choice in enumerate(item["choices"])]
         )
-        print(args.baseline)
         if args.baseline is False:
             qs = f"""Solve this problem, and return the answer at the end of your response, e.g. Answer: A, B, C or D\n
               Problem: {DEFAULT_IMAGE_TOKEN}\n
@@ -215,7 +214,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--baseline",
         type=bool,
-        default=False,
+        action="store_true",
         help="Specify if baseline is true or false",
     )
     args = parser.parse_args()
