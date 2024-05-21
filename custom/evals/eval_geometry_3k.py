@@ -140,40 +140,39 @@ def eval_model(args):
         outputs = outputs.strip()
         extracted_answer = outputs
 
-        if args.baseline_type != "direct":
-            # Answer Extraction
-            prompt = f"""I will give you 4 choices, and a detailed answer. You will extract the letter answer (A, B, C or D) from the detailed answer to the problem.
-            
-            Choices: {choices_str}
+        # Answer Extraction
+        prompt = f"""I will give you 4 choices, and a detailed answer. You must extract ONLY the letter (A, B, C or D) of the final answer from the detailed answer to the problem.
+        
+        Choices: {choices_str}
 
-            Detailed Answer: {outputs}
+        Detailed Answer: {outputs}
 
-            Letter Answer:"""
+        Letter Answer:"""
 
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {"role": "user", "content": prompt},
-                ],
-            )
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user", "content": prompt},
+            ],
+        )
 
-            # Extract token usage from the response
-            total_tokens = response.usage.total_tokens
-            input_tokens = response.usage.prompt_tokens
-            output_tokens = response.usage.completion_tokens
+        # Extract token usage from the response
+        total_tokens = response.usage.total_tokens
+        input_tokens = response.usage.prompt_tokens
+        output_tokens = response.usage.completion_tokens
 
-            cost_per_million_input_tokens = 5  # $5 per 1 million input tokens
-            cost_per_million_output_tokens = 15  # $15 per 1 million output tokens
+        cost_per_million_input_tokens = 5  # $5 per 1 million input tokens
+        cost_per_million_output_tokens = 15  # $15 per 1 million output tokens
 
-            input_cost = (input_tokens / 1_000_000) * cost_per_million_input_tokens
-            output_cost = (output_tokens / 1_000_000) * cost_per_million_output_tokens
-            total_cost = input_cost + output_cost
+        input_cost = (input_tokens / 1_000_000) * cost_per_million_input_tokens
+        output_cost = (output_tokens / 1_000_000) * cost_per_million_output_tokens
+        total_cost = input_cost + output_cost
 
-            # Update running cost
-            running_cost += total_cost
+        # Update running cost
+        running_cost += total_cost
 
-            # get answer
-            extracted_answer = response.choices[0].message.content
+        # get answer
+        extracted_answer = response.choices[0].message.content
 
         print("Item: ", index)
         print("Detailed Answer: ", outputs)
