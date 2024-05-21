@@ -79,11 +79,11 @@ def eval_model(args):
             [f"{chr(65 + i)}. {choice}" for i, choice in enumerate(item["choices"])]
         )
 
-        if args.baseline == False:
+        if args.baseline is False:
             qs = f"""Solve this problem, and return the answer at the end of your response, e.g. Answer: A, B, C or D\n
-                Problem: {DEFAULT_IMAGE_TOKEN}\n
-                {item['problem_text']}\n
-                Choices: {choices_str}"""
+              Problem: {DEFAULT_IMAGE_TOKEN}\n
+              {item['problem_text']}\n
+              Choices: {choices_str}"""
         else:
             if args.baseline_type == "direct":
                 qs = f"""Please directly answer the question and provide the correct option letter, e.g., A, B, C, D.\n

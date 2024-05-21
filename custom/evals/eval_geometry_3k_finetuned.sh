@@ -21,4 +21,4 @@ python -m eval_geometry_3k \
     --results-file $RESULTS_FILE \
     --temperature 0 \
     --conv-mode phi \
-    --baseline false 
+    --baseline False 
