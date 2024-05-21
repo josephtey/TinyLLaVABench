@@ -79,7 +79,7 @@ def eval_model(args):
             [f"{chr(65 + i)}. {choice}" for i, choice in enumerate(item["choices"])]
         )
 
-        if not args.baseline:
+        if args.baseline == False:
             qs = f"""Solve this problem, and return the answer at the end of your response, e.g. Answer: A, B, C or D\n
                 Problem: {DEFAULT_IMAGE_TOKEN}\n
                 {item['problem_text']}\n
