@@ -95,7 +95,7 @@ def eval_model(args):
                 Question: {DEFAULT_IMAGE_TOKEN}\n
                 {item['problem_text']}\n
                 Choices: {choices_str}"""
-
+        print(qs)
         conv = conv_templates[args.conv_mode].copy()
         conv.append_message(conv.roles[0], qs)
         conv.append_message(conv.roles[1], None)
