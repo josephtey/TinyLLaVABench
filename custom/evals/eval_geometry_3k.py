@@ -210,7 +210,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_beams", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=512)
     parser.add_argument(
-        "--baseline-type", type=str, choices=["direct", "cot"], required=True
+        "--baseline-type", type=str, choices=["direct", "cot"], required=False
     )
     parser.add_argument(
         "--baseline",
