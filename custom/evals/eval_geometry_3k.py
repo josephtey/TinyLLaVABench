@@ -213,7 +213,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--baseline",
-        type=bool,
         action="store_true",
         help="Specify if baseline is true or false",
     )
