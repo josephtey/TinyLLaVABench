@@ -17,5 +17,5 @@ python -m eval_geometry_3k \
     --results-file $RESULTS_FILE \
     --temperature 0 \
     --conv-mode phi \
-    --baseline true \
+    --baseline \
     --baseline-type "cot"

@@ -20,6 +20,5 @@ python -m eval_geometry_3k \
     --model-path $MODEL_PATH \
     --results-file $RESULTS_FILE \
     --temperature 0 \
-    --baseline False \
     --conv-mode phi
      
