@@ -93,9 +93,9 @@ def eval_model(args):
                 qs = f"""Please first conduct reasoning, and then answer the question and provide the correct option letter, e.g., A, B, C, D, at the end.
                 Question: {DEFAULT_IMAGE_TOKEN}\n
                 {item['problem_text']}\n
-                Choices: {choices_str}"""
+                Choices: {choices_str}
 
-                print(qs)
+                Answer: Let's think step by step. """
 
         conv = conv_templates[args.conv_mode].copy()
         conv.append_message(conv.roles[0], qs)
