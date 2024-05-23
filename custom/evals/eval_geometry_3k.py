@@ -53,6 +53,7 @@ def load_images(image_files):
 
 
 def eval_model(args):
+    print(args)
     # Model
     disable_torch_init()
 
