@@ -2,6 +2,7 @@ import argparse
 import torch
 import json
 import os
+import base64
 from tqdm import tqdm
 
 from tinyllava.constants import (
@@ -53,13 +54,14 @@ def load_images(image_files):
 
 
 def eval_model(args):
-    # Model
-    disable_torch_init()
+    if args.model_path != "gpt-o":
+        # Model
+        disable_torch_init()
 
-    model_name = get_model_name_from_path(args.model_path)
-    tokenizer, model, image_processor, context_len = load_pretrained_model(
-        args.model_path, args.model_base, model_name
-    )
+        model_name = get_model_name_from_path(args.model_path)
+        tokenizer, model, image_processor, context_len = load_pretrained_model(
+            args.model_path, args.model_base, model_name
+        )
 
     data_file = args.data_file
 
@@ -103,43 +105,89 @@ def eval_model(args):
         prompt = conv.get_prompt()
 
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
-        image = load_image(image_file)
-        images_tensor = process_images([image], image_processor, model.config).to(
-            model.device, dtype=torch.float16
-        )
-
-        input_ids = (
-            tokenizer_image_token(
-                prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt"
-            )
-            .unsqueeze(0)
-            .cuda()
-        )
-
-        stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
-        keywords = [stop_str]
-        stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
-
-        with torch.inference_mode():
-            output_ids = model.generate(
-                input_ids,
-                images=images_tensor,
-                do_sample=True if args.temperature > 0 else False,
-                temperature=args.temperature,
-                top_p=args.top_p,
-                num_beams=args.num_beams,
-                pad_token_id=tokenizer.pad_token_id,
-                max_new_tokens=args.max_new_tokens,
-                use_cache=True,
-                stopping_criteria=[stopping_criteria],
+        if args.model_path != "gpt-o":
+            image = load_image(image_file)
+            images_tensor = process_images([image], image_processor, model.config).to(
+                model.device, dtype=torch.float16
             )
 
-        outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
-        outputs = outputs.strip()
-        if outputs.endswith(stop_str):
-            outputs = outputs[: -len(stop_str)]
-        outputs = outputs.strip()
-        extracted_answer = outputs
+            input_ids = (
+                tokenizer_image_token(
+                    prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt"
+                )
+                .unsqueeze(0)
+                .cuda()
+            )
+
+            stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
+            keywords = [stop_str]
+            stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
+
+            with torch.inference_mode():
+                output_ids = model.generate(
+                    input_ids,
+                    images=images_tensor,
+                    do_sample=True if args.temperature > 0 else False,
+                    temperature=args.temperature,
+                    top_p=args.top_p,
+                    num_beams=args.num_beams,
+                    pad_token_id=tokenizer.pad_token_id,
+                    max_new_tokens=args.max_new_tokens,
+                    use_cache=True,
+                    stopping_criteria=[stopping_criteria],
+                )
+
+            outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
+            outputs = outputs.strip()
+            if outputs.endswith(stop_str):
+                outputs = outputs[: -len(stop_str)]
+            outputs = outputs.strip()
+            extracted_answer = outputs
+        else:
+            with open(image_file, "rb") as image_file:
+                image_data = image_file.read()
+                encoded_image = base64.b64encode(image_data).decode("utf-8")
+
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": f"data:image/png;base64,{encoded_image}"
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                )
+                outputs = response.choices[0].message.content
+                extracted_answer = outputs
+
+                # Extract token usage from the response
+                total_tokens = response.usage.total_tokens
+                input_tokens = response.usage.prompt_tokens
+                output_tokens = response.usage.completion_tokens
+
+                cost_per_million_input_tokens = 5  # $5 per 1 million input tokens
+                cost_per_million_output_tokens = 15  # $15 per 1 million output tokens
+
+                input_cost = (input_tokens / 1_000_000) * cost_per_million_input_tokens
+                output_cost = (
+                    output_tokens / 1_000_000
+                ) * cost_per_million_output_tokens
+                total_cost = input_cost + output_cost
+
+                # Update running cost
+                running_cost += total_cost
+            except Exception as e:
+                print(f"Error calling OpenAI API: {e}")
+                continue
 
         # Answer Extraction
         prompt = f"""I will give you 4 choices, and a detailed answer. You must extract ONLY the letter (A, B, C or D) of the final answer from the detailed answer to the problem.
