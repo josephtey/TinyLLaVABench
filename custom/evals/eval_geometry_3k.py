@@ -26,6 +26,7 @@ from PIL import Image
 from io import BytesIO
 from openai import OpenAI
 from dotenv import load_dotenv
+import backoff
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -51,6 +52,11 @@ def load_images(image_files):
         image = load_image(image_file)
         out.append(image)
     return out
+
+
+@backoff.on_exception(backoff.expo, Exception, max_tries=5)
+def call_openai_api(*args, **kwargs):
+    return client.chat.completions.create(*args, **kwargs)
 
 
 def eval_model(args):
@@ -149,7 +155,7 @@ def eval_model(args):
                 encoded_image = base64.b64encode(image_data).decode("utf-8")
 
             try:
-                response = client.chat.completions.create(
+                response = call_openai_api(
                     model="gpt-4o",
                     messages=[
                         {
@@ -198,7 +204,7 @@ def eval_model(args):
 
         Letter Answer:"""
 
-        response = client.chat.completions.create(
+        response = call_openai_api(
             model="gpt-4o",
             messages=[
                 {"role": "user", "content": prompt},
