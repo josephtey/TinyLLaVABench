@@ -16,7 +16,7 @@ IMAGE_FOLDER="./../../../multimodal-reasoning/dataset/eval/geometry_3k/images"
 MODEL_BASE="./../checkpoints/pre-trained/TinyLLaVA-3.1B"
 
 # finetuned model
-MODEL_PATH="./../checkpoints/fine-tuned/${MODEL_NAME}"
+MODEL_PATH="./../checkpoints/fine-tuned/geometry_3k/${MODEL_NAME}"
 
 # results file
 RESULTS_FILE="./../../../multimodal-reasoning/results/files/results_geometry_3k_${MODEL_NAME}_$(date +%Y%m%d_%H%M%S).json"
