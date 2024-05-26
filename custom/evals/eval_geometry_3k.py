@@ -96,7 +96,9 @@ def eval_model(args):
                 qs = f"""Please directly answer the question and provide the correct option letter, e.g., A, B, C, D.\n
                 Question: {DEFAULT_IMAGE_TOKEN}\n
                 {item['problem_text']}\n
-                Choices: {choices_str}"""
+                Choices: {choices_str}
+
+                Answer:"""
             elif args.baseline_type == "cot":
                 qs = f"""Please first conduct reasoning, and then answer the question and provide the correct option letter, e.g., A, B, C, D, at the end.
                 Question: {DEFAULT_IMAGE_TOKEN}\n
@@ -105,10 +107,11 @@ def eval_model(args):
 
                 Answer: Let's think step by step. """
 
+        print(qs)
         conv = conv_templates[args.conv_mode].copy()
         conv.append_message(conv.roles[0], qs)
-        conv.append_message(conv.roles[1], None)
         prompt = conv.get_prompt()
+        print(prompt)
 
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
         if args.model_path != "gpt-o":
