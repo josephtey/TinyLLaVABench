@@ -20,7 +20,7 @@ deepspeed /piech/u/joetey/TinyLLaVABench/tinyllava/train/train.py \
     --image_aspect_ratio pad \
     --group_by_modality_length False \
     --fp16 True \
-    --output_dir $OUTPUT_DIR \so
+    --output_dir $OUTPUT_DIR \
     --num_train_epochs 3 \
     --per_device_train_batch_size 8 \
     --per_device_eval_batch_size 4 \
