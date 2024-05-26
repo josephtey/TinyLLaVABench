@@ -107,11 +107,9 @@ def eval_model(args):
 
                 Answer: Let's think step by step. """
 
-        print(qs)
         conv = conv_templates[args.conv_mode].copy()
         conv.append_message(conv.roles[0], qs)
         prompt = conv.get_prompt()
-        print(prompt)
 
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
         if args.model_path != "gpt-o":
