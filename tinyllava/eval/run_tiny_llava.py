@@ -149,7 +149,19 @@ def eval_model(args):
     output_ids = raw_output['main'].sequences
     attentions = raw_output['main'].attentions
 
+    from datetime import datetime
     import json
+    
+    output_text = ""
+    for generated_token_index, attention in enumerate(attentions):
+        for i, decoder_element in enumerate(attention):
+            output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
+    
+    output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Write the output to a text file
+    with open(f"{timestamp}_attention.txt", "w") as file:
+        file.write(output_text)
 
     # Initialize an empty list to store the output
     attention_description = []
@@ -171,11 +183,7 @@ def eval_model(args):
     output_file["outputs"] = outputs
     
     # Write the output to a JSON file
-    from datetime import datetime
-    import json
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    with open(f"attention_weights_{timestamp}.json", "w") as file:
+    with open(f"{timestamp}_attention_weights.json", "w") as file:
         json.dump(output_file, file, indent=4)
 
     print(outputs)
