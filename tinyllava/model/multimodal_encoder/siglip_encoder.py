@@ -1,6 +1,6 @@
-'''
+"""
 # Adapted from https://huggingface.co/MILVLG/imp-v1-3b/blob/main/vision_encoder.py
-'''
+"""
 
 from typing import Optional, Tuple, Union, Dict
 from dataclasses import dataclass
@@ -11,8 +11,18 @@ import torch.utils.checkpoint
 from torch import nn
 import os
 from transformers.image_processing_utils import BatchFeature, get_size_dict
-from transformers.image_transforms import (convert_to_rgb, normalize, rescale, resize, to_channel_dimension_format, )
-from transformers.image_utils import (ChannelDimension, PILImageResampling, to_numpy_array, )
+from transformers.image_transforms import (
+    convert_to_rgb,
+    normalize,
+    rescale,
+    resize,
+    to_channel_dimension_format,
+)
+from transformers.image_utils import (
+    ChannelDimension,
+    PILImageResampling,
+    to_numpy_array,
+)
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import BaseModelOutput, BaseModelOutputWithPooling
 from transformers.modeling_utils import PreTrainedModel
@@ -21,16 +31,22 @@ from transformers.utils import ModelOutput
 
 
 class SigLipImageProcessor:
-    def __init__(self,
-                 image_mean=(0.5, 0.5, 0.5),
-                 image_std=(0.5, 0.5, 0.5),
-                 size=(384, 384),
-                 crop_size: Dict[str, int] = None,
-                 resample=PILImageResampling.BICUBIC,
-                 rescale_factor=1 / 255,
-                 data_format=ChannelDimension.FIRST):
-        crop_size = crop_size if crop_size is not None else {"height": 384, "width": 384}
-        crop_size = get_size_dict(crop_size, default_to_square=True, param_name="crop_size")
+    def __init__(
+        self,
+        image_mean=(0.5, 0.5, 0.5),
+        image_std=(0.5, 0.5, 0.5),
+        size=(384, 384),
+        crop_size: Dict[str, int] = None,
+        resample=PILImageResampling.BICUBIC,
+        rescale_factor=1 / 255,
+        data_format=ChannelDimension.FIRST,
+    ):
+        crop_size = (
+            crop_size if crop_size is not None else {"height": 384, "width": 384}
+        )
+        crop_size = get_size_dict(
+            crop_size, default_to_square=True, param_name="crop_size"
+        )
 
         self.image_mean = image_mean
         self.image_std = image_std
@@ -49,10 +65,24 @@ class SigLipImageProcessor:
         transforms = [
             convert_to_rgb,
             to_numpy_array,
-            partial(resize, size=self.size, resample=self.resample, data_format=self.data_format),
+            partial(
+                resize,
+                size=self.size,
+                resample=self.resample,
+                data_format=self.data_format,
+            ),
             partial(rescale, scale=self.rescale_factor, data_format=self.data_format),
-            partial(normalize, mean=self.image_mean, std=self.image_std, data_format=self.data_format),
-            partial(to_channel_dimension_format, channel_dim=self.data_format, input_channel_dim=self.data_format),
+            partial(
+                normalize,
+                mean=self.image_mean,
+                std=self.image_std,
+                data_format=self.data_format,
+            ),
+            partial(
+                to_channel_dimension_format,
+                channel_dim=self.data_format,
+                input_channel_dim=self.data_format,
+            ),
         ]
 
         images = reduce(lambda x, f: [*map(f, x)], transforms, images)
@@ -65,19 +95,19 @@ class SigLipVisionConfig(PretrainedConfig):
     model_type = "siglip_vision_model"
 
     def __init__(
-            self,
-            hidden_size=1152,
-            image_mean=(0.5, 0.5, 0.5),
-            intermediate_size=4304,
-            num_hidden_layers=27,
-            num_attention_heads=16,
-            num_channels=3,
-            image_size=384,
-            patch_size=14,
-            hidden_act="gelu_pytorch_tanh",
-            layer_norm_eps=1e-6,
-            attention_dropout=0.0,
-            **kwargs,
+        self,
+        hidden_size=1152,
+        image_mean=(0.5, 0.5, 0.5),
+        intermediate_size=4304,
+        num_hidden_layers=27,
+        num_attention_heads=16,
+        num_channels=3,
+        image_size=384,
+        patch_size=14,
+        hidden_act="gelu_pytorch_tanh",
+        layer_norm_eps=1e-6,
+        attention_dropout=0.0,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -94,16 +124,24 @@ class SigLipVisionConfig(PretrainedConfig):
         self.image_mean = image_mean
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_name_or_path: Union[str, os.PathLike], **kwargs) -> "PretrainedConfig":
+    def from_pretrained(
+        cls, pretrained_model_name_or_path: Union[str, os.PathLike], **kwargs
+    ) -> "PretrainedConfig":
         cls._set_token_in_kwargs(kwargs)
 
-        config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+        config_dict, kwargs = cls.get_config_dict(
+            pretrained_model_name_or_path, **kwargs
+        )
 
         # get the vision config dict if we are loading from SigLipConfig
         if config_dict.get("model_type") == "siglip":
             config_dict = config_dict["vision_config"]
 
-        if "model_type" in config_dict and hasattr(cls, "model_type") and config_dict["model_type"] != cls.model_type:
+        if (
+            "model_type" in config_dict
+            and hasattr(cls, "model_type")
+            and config_dict["model_type"] != cls.model_type
+        ):
             logger.warning(
                 f"You are using a model of type {config_dict['model_type']} to instantiate a model of type "
                 f"{cls.model_type}. This is not supported for all configurations of models and can yield errors."
@@ -161,10 +199,16 @@ class SigLipVisionEmbeddings(nn.Module):
         self.num_patches = (self.image_size // self.patch_size) ** 2
         self.num_positions = self.num_patches
         self.position_embedding = nn.Embedding(self.num_positions, self.embed_dim)
-        self.register_buffer("position_ids", torch.arange(self.num_positions).expand((1, -1)), persistent=False)
+        self.register_buffer(
+            "position_ids",
+            torch.arange(self.num_positions).expand((1, -1)),
+            persistent=False,
+        )
 
     def forward(self, pixel_values: torch.FloatTensor) -> torch.Tensor:
-        patch_embeds = self.patch_embedding(pixel_values)  # shape = [*, width, grid, grid]
+        patch_embeds = self.patch_embedding(
+            pixel_values
+        )  # shape = [*, width, grid, grid]
         embeddings = patch_embeds.flatten(2).transpose(1, 2)
 
         embeddings = embeddings + self.position_embedding(self.position_ids)
@@ -186,7 +230,7 @@ class SigLipAttention(nn.Module):
                 f"embed_dim must be divisible by num_heads (got `embed_dim`: {self.embed_dim} and `num_heads`:"
                 f" {self.num_heads})."
             )
-        self.scale = self.head_dim ** -0.5
+        self.scale = self.head_dim**-0.5
         self.dropout = config.attention_dropout
 
         self.k_proj = nn.Linear(self.embed_dim, self.embed_dim)
@@ -195,10 +239,10 @@ class SigLipAttention(nn.Module):
         self.out_proj = nn.Linear(self.embed_dim, self.embed_dim)
 
     def forward(
-            self,
-            hidden_states: torch.Tensor,
-            attention_mask: Optional[torch.Tensor] = None,
-            output_attentions: Optional[bool] = False,
+        self,
+        hidden_states: torch.Tensor,
+        attention_mask: Optional[torch.Tensor] = None,
+        output_attentions: Optional[bool] = False,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
         """Input shape: Batch x Time x Channel"""
 
@@ -208,12 +252,20 @@ class SigLipAttention(nn.Module):
         key_states = self.k_proj(hidden_states)
         value_states = self.v_proj(hidden_states)
 
-        query_states = query_states.view(batch_size, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        key_states = key_states.view(batch_size, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        value_states = value_states.view(batch_size, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+        query_states = query_states.view(
+            batch_size, q_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        key_states = key_states.view(
+            batch_size, q_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        value_states = value_states.view(
+            batch_size, q_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
 
         k_v_seq_len = key_states.shape[-2]
-        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) * self.scale
+        attn_weights = (
+            torch.matmul(query_states, key_states.transpose(2, 3)) * self.scale
+        )
 
         if attn_weights.size() != (batch_size, self.num_heads, q_len, k_v_seq_len):
             raise ValueError(
@@ -229,8 +281,12 @@ class SigLipAttention(nn.Module):
             attn_weights = attn_weights + attention_mask
 
         # upcast attention to fp32
-        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
-        attn_weights = nn.functional.dropout(attn_weights, p=self.dropout, training=self.training)
+        attn_weights = nn.functional.softmax(
+            attn_weights, dim=-1, dtype=torch.float32
+        ).to(query_states.dtype)
+        attn_weights = nn.functional.dropout(
+            attn_weights, p=self.dropout, training=self.training
+        )
         attn_output = torch.matmul(attn_weights, value_states)
 
         if attn_output.size() != (batch_size, self.num_heads, q_len, self.head_dim):
@@ -275,10 +331,10 @@ class SigLipEncoderLayer(nn.Module):
 
     # Ignore copy
     def forward(
-            self,
-            hidden_states: torch.Tensor,
-            attention_mask: torch.Tensor,
-            output_attentions: Optional[bool] = False,
+        self,
+        hidden_states: torch.Tensor,
+        attention_mask: torch.Tensor,
+        output_attentions: Optional[bool] = False,
     ) -> Tuple[torch.FloatTensor]:
         """
         Args:
@@ -341,17 +397,19 @@ class SigLipEncoder(nn.Module):
     def __init__(self, config: SigLipVisionConfig):
         super().__init__()
         self.config = config
-        self.layers = nn.ModuleList([SigLipEncoderLayer(config) for _ in range(config.num_hidden_layers)])
+        self.layers = nn.ModuleList(
+            [SigLipEncoderLayer(config) for _ in range(config.num_hidden_layers)]
+        )
         self.gradient_checkpointing = False
 
     # Ignore copy
     def forward(
-            self,
-            inputs_embeds,
-            attention_mask: Optional[torch.Tensor] = None,
-            output_attentions: Optional[bool] = None,
-            output_hidden_states: Optional[bool] = None,
-            return_dict: Optional[bool] = None,
+        self,
+        inputs_embeds,
+        attention_mask: Optional[torch.Tensor] = None,
+        output_attentions: Optional[bool] = None,
+        output_hidden_states: Optional[bool] = None,
+        return_dict: Optional[bool] = None,
     ) -> Union[Tuple, BaseModelOutput]:
         r"""
         Args:
@@ -375,11 +433,19 @@ class SigLipEncoder(nn.Module):
             return_dict (`bool`, *optional*):
                 Whether or not to return a [`~utils.ModelOutput`] instead of a plain tuple.
         """
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        output_attentions = (
+            output_attentions
+            if output_attentions is not None
+            else self.config.output_attentions
         )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        output_hidden_states = (
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
+        )
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         encoder_states = () if output_hidden_states else None
         all_attentions = () if output_attentions else None
@@ -411,9 +477,15 @@ class SigLipEncoder(nn.Module):
             encoder_states = encoder_states + (hidden_states,)
 
         if not return_dict:
-            return tuple(v for v in [hidden_states, encoder_states, all_attentions] if v is not None)
+            return tuple(
+                v
+                for v in [hidden_states, encoder_states, all_attentions]
+                if v is not None
+            )
         return BaseModelOutput(
-            last_hidden_state=hidden_states, hidden_states=encoder_states, attentions=all_attentions
+            last_hidden_state=hidden_states,
+            hidden_states=encoder_states,
+            attentions=all_attentions,
         )
 
 
@@ -429,21 +501,29 @@ class SigLipVisionTransformer(nn.Module):
         self.head = SigLipMultiheadAttentionPoolingHead(config)
 
     def forward(
-            self,
-            pixel_values,
-            output_attentions: Optional[bool] = None,
-            output_hidden_states: Optional[bool] = None,
-            return_dict: Optional[bool] = None,
+        self,
+        pixel_values,
+        output_attentions: Optional[bool] = None,
+        output_hidden_states: Optional[bool] = None,
+        return_dict: Optional[bool] = None,
     ) -> Union[Tuple, BaseModelOutputWithPooling]:
         r"""
         Returns:
 
         """
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        output_attentions = (
+            output_attentions
+            if output_attentions is not None
+            else self.config.output_attentions
         )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        output_hidden_states = (
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
+        )
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         hidden_states = self.embeddings(pixel_values)
 
@@ -477,7 +557,9 @@ class SigLipMultiheadAttentionPoolingHead(nn.Module):
         super().__init__()
 
         self.probe = nn.Parameter(torch.randn(1, 1, config.hidden_size))
-        self.attention = torch.nn.MultiheadAttention(config.hidden_size, config.num_attention_heads, batch_first=True)
+        self.attention = torch.nn.MultiheadAttention(
+            config.hidden_size, config.num_attention_heads, batch_first=True
+        )
         self.layernorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.mlp = SigLipMLP(config)
 
@@ -513,11 +595,11 @@ class SigLipVisionModel(SigLipPreTrainedModel):
         return self.vision_model.embeddings.patch_embedding
 
     def forward(
-            self,
-            pixel_values,
-            output_attentions: Optional[bool] = None,
-            output_hidden_states: Optional[bool] = None,
-            return_dict: Optional[bool] = None,
+        self,
+        pixel_values,
+        output_attentions: Optional[bool] = None,
+        output_hidden_states: Optional[bool] = None,
+        return_dict: Optional[bool] = None,
     ) -> Union[Tuple, BaseModelOutputWithPooling]:
         r"""
         Returns:
@@ -541,7 +623,9 @@ class SigLipVisionModel(SigLipPreTrainedModel):
         >>> last_hidden_state = outputs.last_hidden_state
         >>> pooled_output = outputs.pooler_output  # pooled features
         ```"""
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         return self.vision_model(
             pixel_values=pixel_values,
@@ -584,14 +668,18 @@ class SigLipVisionTower(nn.Module):
         if type(images) is list:
             image_features = []
             for image in images:
-                image_forward_out = self.vision_tower(image.to(device=self.device, dtype=self.dtype).unsqueeze(0),
-                                                      output_hidden_states=True)
+                image_forward_out = self.vision_tower(
+                    image.to(device=self.device, dtype=self.dtype).unsqueeze(0),
+                    output_hidden_states=True,
+                )
                 image_feature = image_forward_out.hidden_states[-1].to(image.dtype)
                 assert image_features.shape[-2] == 729
                 image_features.append(image_feature)
         else:
-            image_forward_outs = self.vision_tower(images.to(device=self.device, dtype=self.dtype),
-                                                   output_hidden_states=True)
+            image_forward_outs = self.vision_tower(
+                images.to(device=self.device, dtype=self.dtype),
+                output_hidden_states=True,
+            )
             image_features = image_forward_outs.hidden_states[-1].to(images.dtype)
             assert image_features.shape[-2] == 729
 

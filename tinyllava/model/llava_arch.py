@@ -167,10 +167,16 @@ class LlavaMetaForCausalLM(ABC):
     def get_vision_tower(self):
         return self.get_model().get_vision_tower()
 
-    def encode_images(self, images):
+    def encode_images(self, images, output_file=None):
         image_features = self.get_model().get_vision_tower()(images)
+        if output_file is not None:
+            output_file["post_vision_tower_encoding"] = image_features.shape
+
         image_features = self.get_model().mm_projector(image_features)
-        return image_features
+        if output_file is not None:
+            output_file["post_mm_projector"] = image_features.shape
+
+        return image_features, output_file
 
     def prepare_inputs_labels_for_multimodal(
         self,
@@ -198,7 +204,7 @@ class LlavaMetaForCausalLM(ABC):
             if type(images) is list:
                 images = [x.unsqueeze(0) if x.ndim == 3 else x for x in images]
             concat_images = torch.cat([image for image in images], dim=0)
-            image_features = self.encode_images(concat_images)
+            image_features, output_file = self.encode_images(concat_images, output_file)
             split_sizes = [image.shape[0] for image in images]
             image_features = torch.split(image_features, split_sizes, dim=0)
             mm_patch_merge_type = getattr(self.config, "mm_patch_merge_type", "flat")
@@ -271,7 +277,7 @@ class LlavaMetaForCausalLM(ABC):
                     f"Unexpected mm_patch_merge_type: {self.config.mm_patch_merge_type}"
                 )
         else:
-            image_features = self.encode_images(images)
+            image_features, output_file = self.encode_images(images, output_file)
 
             if output_file is not None:
                 output_file["image_features"] = image_features.shape

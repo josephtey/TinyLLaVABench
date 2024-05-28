@@ -16,7 +16,7 @@ class IdentityMap(nn.Module):
 
     @property
     def config(self):
-        return {"mm_projector_type": 'identity'}
+        return {"mm_projector_type": "identity"}
 
 
 class SimpleResBlock(nn.Module):
@@ -25,10 +25,9 @@ class SimpleResBlock(nn.Module):
         self.pre_norm = nn.LayerNorm(channels)
 
         self.proj = nn.Sequential(
-            nn.Linear(channels, channels),
-            nn.GELU(),
-            nn.Linear(channels, channels)
+            nn.Linear(channels, channels), nn.GELU(), nn.Linear(channels, channels)
         )
+
     def forward(self, x):
         x = self.pre_norm(x)
         return x + self.proj(x)
@@ -40,11 +39,15 @@ class ResamplerBlock(nn.Module):
         hidden_size: int = 768,
         image_hidden_size: int = 1024,
         num_heads: int = 12,
-        intermediate_size: int = None
+        intermediate_size: int = None,
     ):
         super().__init__()
-        assert hidden_size % num_heads == 0, "For MHSA, you must have number of heads divisible by initial hidden size"
-        intermediate_size = hidden_size * 4 if intermediate_size is None else intermediate_size
+        assert (
+            hidden_size % num_heads == 0
+        ), "For MHSA, you must have number of heads divisible by initial hidden size"
+        intermediate_size = (
+            hidden_size * 4 if intermediate_size is None else intermediate_size
+        )
         # intermediate_size = hidden_size * 4
         self.scale = 1 / math.sqrt(hidden_size // num_heads)
         self.num_heads = num_heads
@@ -86,7 +89,9 @@ class ResamplerBlock(nn.Module):
         # for stability
         scores = scores - scores.amax(dim=-1, keepdim=True).detach()
         # softmax
-        attention_scores = scores.softmax(dim=-1)   # b h i j (i: number of queries, j: number of keys)
+        attention_scores = scores.softmax(
+            dim=-1
+        )  # b h i j (i: number of queries, j: number of keys)
         # dot product with V
         out = torch.einsum("... i j, ... j d -> ... i d", attention_scores, values)
         out = rearrange(out, "b h n d -> b n (h d)", h=self.num_heads)
@@ -106,14 +111,15 @@ class Resampler(nn.Module):
         intermediate_size: int = None,
         num_queries: int = 128,
         num_layers: int = 3,
-        initializer_range: float = 0.02
+        initializer_range: float = 0.02,
     ):
         super().__init__()
         self.resampler_blocks = nn.ModuleList(
             [
                 ResamplerBlock(
                     hidden_size, image_hidden_size, num_heads, intermediate_size
-                ) for _ in range(num_layers)
+                )
+                for _ in range(num_layers)
             ]
         )
         self.queries = nn.Parameter(torch.randn(num_queries, hidden_size))
@@ -142,7 +148,7 @@ class Resampler(nn.Module):
 
     def forward(self, image_hidden_states: torch.Tensor) -> torch.Tensor:
         b = image_hidden_states.size(0)
-        queries = repeat(self.queries, 'n d -> b n d', b=b)
+        queries = repeat(self.queries, "n d -> b n d", b=b)
         for resampler_block in self.resampler_blocks:
             queries = resampler_block(queries, image_hidden_states)
 
@@ -152,22 +158,22 @@ class Resampler(nn.Module):
 
 
 def build_vision_projector(config, delay_load=False, **kwargs):
-    projector_type = getattr(config, 'mm_projector_type', 'linear')
+    projector_type = getattr(config, "mm_projector_type", "linear")
 
-    if projector_type == 'linear':
+    if projector_type == "linear":
         return nn.Linear(config.mm_hidden_size, config.hidden_size)
 
-    if projector_type == 'resampler':
-        hidden_size = getattr(config, 'resampler_hidden_size', 768)
+    if projector_type == "resampler":
+        hidden_size = getattr(config, "resampler_hidden_size", 768)
         image_hidden_size = config.mm_hidden_size
-        num_queries = getattr(config, 'num_queries', 128)
+        num_queries = getattr(config, "num_queries", 128)
         final_hidden_size = config.hidden_size
         num_heads = 12
         if hidden_size == 512:
             num_heads = 8
-        num_layers = getattr(config, 'num_resampler_layers', 3)
+        num_layers = getattr(config, "num_resampler_layers", 3)
 
-        initializer_range = getattr(config, 'initializer_range', 0.02)
+        initializer_range = getattr(config, "initializer_range", 0.02)
         print(
             f"resampler config: resampler hidden size: {hidden_size}, num_queries: {num_queries}, "
             f"num_resampler_layers: {num_layers}"
@@ -179,10 +185,10 @@ def build_vision_projector(config, delay_load=False, **kwargs):
             final_hidden_size=final_hidden_size,
             num_layers=num_layers,
             num_heads=num_heads,
-            initializer_range=initializer_range
+            initializer_range=initializer_range,
         )
 
-    mlp_gelu_match = re.match(r'^mlp(\d+)x_gelu$', projector_type)
+    mlp_gelu_match = re.match(r"^mlp(\d+)x_gelu$", projector_type)
     if mlp_gelu_match:
         mlp_depth = int(mlp_gelu_match.group(1))
         modules = [nn.Linear(config.mm_hidden_size, config.hidden_size)]
@@ -190,26 +196,28 @@ def build_vision_projector(config, delay_load=False, **kwargs):
             modules.append(nn.GELU())
             modules.append(nn.Linear(config.hidden_size, config.hidden_size))
         mlp = nn.Sequential(*modules)
-        if getattr(config, 'load_moe_mm_projector', False):
+        if getattr(config, "load_moe_mm_projector", False):
             from deepspeed.moe.layer import MoE
+
             mlp = MoE(
                 config.mm_hidden_size,
                 expert=mlp,
                 num_experts=4,
                 ep_size=1,
                 k=2,
-                capacity_factor=1.,
-                eval_capacity_factor=1.,
+                capacity_factor=1.0,
+                eval_capacity_factor=1.0,
                 min_capacity=4,
                 use_residual=False,
             )
 
             def moe_forward_wrapper(forward_func):
                 return lambda *args, **kwargs: forward_func(*args, **kwargs)[0]
+
             mlp.forward = moe_forward_wrapper(mlp.forward)
         return mlp
 
-    if projector_type == 'identity':
+    if projector_type == "identity":
         return IdentityMap()
 
-    raise ValueError(f'Unknown projector type: {projector_type}')
+    raise ValueError(f"Unknown projector type: {projector_type}")
