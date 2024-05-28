@@ -145,9 +145,9 @@ def eval_model(args):
     #     print(
     #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
     #     )
-    output_file = raw_output.output_file
-    output_ids = raw_output.main.sequences
-    attentions = raw_output.main.attentions
+    output_file = raw_output['output_file']
+    output_ids = raw_output['main'].sequences
+    attentions = raw_output['main'].attentions
 
     output_file["attention_weights"] = attentions
 
