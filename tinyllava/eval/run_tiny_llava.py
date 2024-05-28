@@ -108,7 +108,7 @@ def eval_model(args):
     )
 
     # image tensor
-    output_file["image_tensor"] = images_tensor
+    output_file["image_tensor"] = images_tensor.shape
 
     input_ids = (
         tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt")
@@ -116,7 +116,7 @@ def eval_model(args):
         .cuda()
     )
 
-    output_file["input_ids"] = input_ids
+    output_file["input_ids"] = input_ids.shape
 
     stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
     keywords = [stop_str]
@@ -149,7 +149,17 @@ def eval_model(args):
     output_ids = raw_output['main'].sequences
     attentions = raw_output['main'].attentions
 
-    output_file["attention_weights"] = attentions
+    import json
+
+    # Initialize an empty list to store the output
+    attention_description = []
+    for generated_token_index, attention in enumerate(attentions):
+        for i, decoder_element in enumerate(attention):
+            attention_description.append({
+                "generated_token_index": generated_token_index,
+                "decoder_element_index": i,
+                "decoder_element_shape": decoder_element.shape
+            })
 
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()
@@ -157,7 +167,9 @@ def eval_model(args):
         outputs = outputs[: -len(stop_str)]
     outputs = outputs.strip()
 
+    output_file["attention_description"] = attention_description
     output_file["outputs"] = outputs
+    
     # Write the output to a JSON file
     from datetime import datetime
     import json
