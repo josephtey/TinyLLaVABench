@@ -272,7 +272,9 @@ class LlavaMetaForCausalLM(ABC):
                 )
         else:
             image_features = self.encode_images(images)
-            output_file["image_features"] = image_features.shape
+
+            if output_file is not None:
+                output_file["image_features"] = image_features.shape
 
         # TODO: image start / end is not implemented here to support pretraining.
         if getattr(self.config, "tune_mm_mlp_adapter", False) and getattr(

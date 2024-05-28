@@ -145,18 +145,18 @@ def eval_model(args):
     #     print(
     #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
     #     )
-    output_file = raw_output['output_file']
-    output_ids = raw_output['main'].sequences
-    attentions = raw_output['main'].attentions
+    output_file = raw_output["output_file"]
+    output_ids = raw_output["main"].sequences
+    attentions = raw_output["main"].attentions
 
     from datetime import datetime
     import json
-    
+
     output_text = ""
     for generated_token_index, attention in enumerate(attentions):
         for i, decoder_element in enumerate(attention):
             output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
-    
+
     output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # Write the output to a text file
@@ -167,11 +167,13 @@ def eval_model(args):
     attention_description = []
     for generated_token_index, attention in enumerate(attentions):
         for i, decoder_element in enumerate(attention):
-            attention_description.append({
-                "generated_token_index": generated_token_index,
-                "decoder_element_index": i,
-                "decoder_element_shape": decoder_element.shape
-            })
+            attention_description.append(
+                {
+                    "generated_token_index": generated_token_index,
+                    "decoder_element_index": i,
+                    "decoder_element_shape": decoder_element.shape,
+                }
+            )
 
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()
@@ -181,7 +183,7 @@ def eval_model(args):
 
     output_file["attention_description"] = attention_description
     output_file["outputs"] = outputs
-    
+
     # Write the output to a JSON file
     with open(f"{timestamp}_attention_weights.json", "w") as file:
         json.dump(output_file, file, indent=4)
