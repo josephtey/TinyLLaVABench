@@ -124,7 +124,7 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
             raise NotImplementedError("`inputs_embeds` is not supported")
 
         if images is not None:
-            (inputs, position_ids, attention_mask, _, inputs_embeds, _) = (
+            (inputs, position_ids, attention_mask, _, inputs_embeds, _, output_file) = (
                 self.prepare_inputs_labels_for_multimodal(
                     inputs,
                     position_ids,
@@ -132,6 +132,7 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
                     None,
                     None,
                     images,
+                    output_file,
                     # image_sizes=image_sizes
                 )
             )
