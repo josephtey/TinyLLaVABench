@@ -120,8 +120,6 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
         output_hidden_states = kwargs.pop("output_hidden_states", True)
         output_file = kwargs.pop("output_file", None)
 
-        print("OUTPUT_FILE", output_file)
-
         if "inputs_embeds" in kwargs:
             raise NotImplementedError("`inputs_embeds` is not supported")
 
@@ -147,6 +145,7 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
         else:
             inputs_embeds = self.get_model().embed_tokens(inputs)
 
+        print("OUTPUTFILE 2: ", output_file_2)
         output_file_2["inputs_embeds"] = inputs_embeds.shape
 
         return {
