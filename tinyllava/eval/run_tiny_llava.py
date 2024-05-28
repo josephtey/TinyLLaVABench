@@ -24,6 +24,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 import re
+import numpy as np
 
 
 def image_parser(args):
@@ -53,6 +54,7 @@ def eval_model(args):
     disable_torch_init()
 
     model_name = get_model_name_from_path(args.model_path)
+    print("MODEL NAME: ", model_name)
     tokenizer, model, image_processor, context_len = load_pretrained_model(
         args.model_path, args.model_base, model_name
     )
@@ -70,49 +72,54 @@ def eval_model(args):
         else:
             qs = DEFAULT_IMAGE_TOKEN + "\n" + qs
 
-    # if 'phi' in model_name.lower() or '3.1b' in model_name.lower():
-    #     conv_mode = "phi"
-    # if "llama-2" in model_name.lower():
-    #     conv_mode = "llava_llama_2"
-    # elif "v1" in model_name.lower():
-    #     conv_mode = "llava_v1"
-    # elif "mpt" in model_name.lower():
-    #     conv_mode = "mpt"
-    # else:
-    #     conv_mode = "llava_v0"
-    #
-    # if args.conv_mode is not None and conv_mode != args.conv_mode:
-    #     print(
-    #         "[WARNING] the auto inferred conversation mode is {}, while `--conv-mode` is {}, using {}".format(
-    #             conv_mode, args.conv_mode, args.conv_mode
-    #         )
-    #     )
-    # else:
-    # args.conv_mode = conv_mode
+    if 'phi' in model_name.lower() or '3.1b' in model_name.lower():
+        conv_mode = "phi"
+    if "llama-2" in model_name.lower():
+        conv_mode = "llava_llama_2"
+    elif "v1" in model_name.lower():
+        conv_mode = "llava_v1"
+    elif "mpt" in model_name.lower():
+        conv_mode = "mpt"
+    else:
+        conv_mode = "llava_v0"
+    
+    if args.conv_mode is not None and conv_mode != args.conv_mode:
+        print(
+            "[WARNING] the auto inferred conversation mode is {}, while `--conv-mode` is {}, using {}".format(
+                conv_mode, args.conv_mode, args.conv_mode
+            )
+        )
+    else:
+        args.conv_mode = conv_mode
 
     conv = conv_templates[args.conv_mode].copy()
     conv.append_message(conv.roles[0], qs)
     conv.append_message(conv.roles[1], None)
     prompt = conv.get_prompt()
-
+    print("PROMPT: ", prompt)
+    
     image_files = image_parser(args)
     images = load_images(image_files)
     images_tensor = process_images(images, image_processor, model.config).to(
         model.device, dtype=torch.float16
     )
-
+    print("IMAGE TENSOR: ", images_tensor)
+    print("SHAPE: ", images_tensor.shape)
+    
     input_ids = (
         tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt")
         .unsqueeze(0)
         .cuda()
     )
 
+    print("INPUT IDS: ", input_ids)
+    print("SHAPE: ", input_ids.shape)
     stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
     keywords = [stop_str]
     stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
 
     with torch.inference_mode():
-        output_ids = model.generate(
+        raw_output = model.generate(
             input_ids,
             images=images_tensor,
             do_sample=True if args.temperature > 0 else False,
@@ -121,8 +128,10 @@ def eval_model(args):
             num_beams=args.num_beams,
             pad_token_id=tokenizer.pad_token_id,
             max_new_tokens=args.max_new_tokens,
-            use_cache=True,
+            use_cache=False,
             stopping_criteria=[stopping_criteria],
+            output_attentions=True,
+            output_hidden_states=True
         )
 
     # input_token_len = input_ids.shape[1]
@@ -131,6 +140,44 @@ def eval_model(args):
     #     print(
     #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
     #     )
+    output_ids = raw_output.sequences
+    attentions = raw_output.attentions
+
+    # Initialize an empty string to store the output
+    output_text = ""
+    
+    for generated_token_index, attention in enumerate(attentions):
+        for i, decoder_element in enumerate(attention):
+            output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
+    
+    output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
+    
+    # Write the output to a text file
+    with open('attention_output.txt', 'w') as file:
+        file.write(output_text)
+
+    import json
+
+    # Initialize an empty list to store the output
+    output = []
+    
+    for generated_token_index, attention in enumerate(attentions):
+        for i, decoder_element in enumerate(attention):
+            output.append({
+                "generated_token_index": generated_token_index,
+                "decoder_element_index": i,
+                "decoder_element_shape": decoder_element.shape
+            })
+    
+    output.append({"ATTENTION_SHAPE": len(attentions)})
+    
+    # Write the output to a JSON file
+    with open('attention_main.json', 'w') as file:
+        json.dump({
+            "weights": output
+        }, file, indent=4)
+
+    
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()
     if outputs.endswith(stop_str):
