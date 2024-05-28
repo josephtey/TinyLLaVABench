@@ -29,6 +29,7 @@ from transformers.modeling_outputs import CausalLMOutputWithPast
 from tinyllava.model.llava_arch import LlavaMetaModel, LlavaMetaForCausalLM
 from tinyllava.model.model_factory import *
 
+
 class TinyLlavaPhiConfig(PhiConfig):
     model_type = "tiny_llava_phi"
 
@@ -40,7 +41,8 @@ class TinyLlavaPhiModel(LlavaMetaModel, PhiModel):
         super(TinyLlavaPhiModel, self).__init__(config)
         self.gradient_checkpointing = False
 
-@register_model('phi')
+
+@register_model("phi")
 class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
     config_class = TinyLlavaPhiConfig
 
@@ -80,7 +82,7 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
                 attention_mask,
                 past_key_values,
                 inputs_embeds,
-                labels
+                labels,
             ) = self.prepare_inputs_labels_for_multimodal(
                 input_ids,
                 position_ids,
@@ -101,7 +103,7 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
             use_cache=use_cache,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
-            return_dict=return_dict
+            return_dict=return_dict,
         )
 
     @torch.no_grad()
@@ -116,62 +118,68 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
         attention_mask = kwargs.pop("attention_mask", None)
         output_attentions = kwargs.pop("output_attentions", True)
         output_hidden_states = kwargs.pop("output_hidden_states", True)
-        
+        output_file = kwargs.pop("output_file", None)
+
         if "inputs_embeds" in kwargs:
             raise NotImplementedError("`inputs_embeds` is not supported")
 
         if images is not None:
-            (
-                inputs,
-                position_ids,
-                attention_mask,
-                _,
-                inputs_embeds,
-                _
-            ) = self.prepare_inputs_labels_for_multimodal(
-                inputs,
-                position_ids,
-                attention_mask,
-                None,
-                None,
-                images,
-                # image_sizes=image_sizes
+            (inputs, position_ids, attention_mask, _, inputs_embeds, _) = (
+                self.prepare_inputs_labels_for_multimodal(
+                    inputs,
+                    position_ids,
+                    attention_mask,
+                    None,
+                    None,
+                    images,
+                    # image_sizes=image_sizes
+                )
             )
         else:
             inputs_embeds = self.get_model().embed_tokens(inputs)
 
-        print("FINAL INPUTS EMBEDS: ", inputs_embeds)
-        print("SHAPE: ", inputs_embeds.shape)
-        
-        return super().generate(
-            position_ids=position_ids,
-            attention_mask=attention_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict_in_generate=True,
-            **kwargs
-        )
+        output_file["inputs_embeds"] = inputs_embeds
 
-    def prepare_inputs_for_generation(self, input_ids, past_key_values=None,
-                                      inputs_embeds=None, **kwargs):
+        return {
+            "output_file": output_file,
+            "main": super().generate(
+                position_ids=position_ids,
+                attention_mask=attention_mask,
+                inputs_embeds=inputs_embeds,
+                output_attentions=output_attentions,
+                output_hidden_states=output_hidden_states,
+                return_dict_in_generate=True,
+                **kwargs,
+            ),
+        }
+
+    def prepare_inputs_for_generation(
+        self, input_ids, past_key_values=None, inputs_embeds=None, **kwargs
+    ):
         images = kwargs.pop("images", None)
         image_sizes = kwargs.pop("image_sizes", None)
         inputs = super().prepare_inputs_for_generation(
-            input_ids, past_key_values=past_key_values, inputs_embeds=inputs_embeds, **kwargs
+            input_ids,
+            past_key_values=past_key_values,
+            inputs_embeds=inputs_embeds,
+            **kwargs,
         )
         if images is not None:
-            inputs['images'] = images
+            inputs["images"] = images
         if image_sizes is not None:
-            inputs['image_sizes'] = image_sizes
+            inputs["image_sizes"] = image_sizes
         return inputs
 
-@register_tokenizer('phi')
+
+@register_tokenizer("phi")
 def get_tokenizer():
     from transformers import AutoTokenizer
+
     def post_init(tokenizer):
         return tokenizer
+
     return AutoTokenizer, post_init
+
 
 AutoConfig.register("tiny_llava_phi", TinyLlavaPhiConfig)
 AutoModelForCausalLM.register(TinyLlavaPhiConfig, TinyLlavaPhiForCausalLM)

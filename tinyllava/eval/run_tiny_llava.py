@@ -53,6 +53,7 @@ def eval_model(args):
     # Model
     disable_torch_init()
 
+    output_file = {}
     model_name = get_model_name_from_path(args.model_path)
     print("MODEL NAME: ", model_name)
     tokenizer, model, image_processor, context_len = load_pretrained_model(
@@ -72,7 +73,7 @@ def eval_model(args):
         else:
             qs = DEFAULT_IMAGE_TOKEN + "\n" + qs
 
-    if 'phi' in model_name.lower() or '3.1b' in model_name.lower():
+    if "phi" in model_name.lower() or "3.1b" in model_name.lower():
         conv_mode = "phi"
     if "llama-2" in model_name.lower():
         conv_mode = "llava_llama_2"
@@ -82,7 +83,7 @@ def eval_model(args):
         conv_mode = "mpt"
     else:
         conv_mode = "llava_v0"
-    
+
     if args.conv_mode is not None and conv_mode != args.conv_mode:
         print(
             "[WARNING] the auto inferred conversation mode is {}, while `--conv-mode` is {}, using {}".format(
@@ -96,24 +97,27 @@ def eval_model(args):
     conv.append_message(conv.roles[0], qs)
     conv.append_message(conv.roles[1], None)
     prompt = conv.get_prompt()
-    print("PROMPT: ", prompt)
-    
+
+    # output file
+    output_file["prompt"] = prompt
+
     image_files = image_parser(args)
     images = load_images(image_files)
     images_tensor = process_images(images, image_processor, model.config).to(
         model.device, dtype=torch.float16
     )
-    print("IMAGE TENSOR: ", images_tensor)
-    print("SHAPE: ", images_tensor.shape)
-    
+
+    # image tensor
+    output_file["image_tensor"] = images_tensor
+
     input_ids = (
         tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt")
         .unsqueeze(0)
         .cuda()
     )
 
-    print("INPUT IDS: ", input_ids)
-    print("SHAPE: ", input_ids.shape)
+    output_file["input_ids"] = input_ids
+
     stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
     keywords = [stop_str]
     stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
@@ -131,7 +135,8 @@ def eval_model(args):
             use_cache=False,
             stopping_criteria=[stopping_criteria],
             output_attentions=True,
-            output_hidden_states=True
+            output_hidden_states=True,
+            output_file=output_file,
         )
 
     # input_token_len = input_ids.shape[1]
@@ -140,49 +145,27 @@ def eval_model(args):
     #     print(
     #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
     #     )
-    output_ids = raw_output.sequences
-    attentions = raw_output.attentions
+    output_file = raw_output.output_file
+    output_ids = raw_output.main.sequences
+    attentions = raw_output.main.attentions
 
-    # Initialize an empty string to store the output
-    output_text = ""
-    
-    for generated_token_index, attention in enumerate(attentions):
-        for i, decoder_element in enumerate(attention):
-            output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
-    
-    output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
-    
-    # Write the output to a text file
-    with open('attention_output.txt', 'w') as file:
-        file.write(output_text)
+    output_file["attention_weights"] = attentions
 
-    import json
-
-    # Initialize an empty list to store the output
-    output = []
-    
-    for generated_token_index, attention in enumerate(attentions):
-        for i, decoder_element in enumerate(attention):
-            output.append({
-                "generated_token_index": generated_token_index,
-                "decoder_element_index": i,
-                "decoder_element_shape": decoder_element.shape
-            })
-    
-    output.append({"ATTENTION_SHAPE": len(attentions)})
-    
-    # Write the output to a JSON file
-    with open('attention_main.json', 'w') as file:
-        json.dump({
-            "weights": output
-        }, file, indent=4)
-
-    
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()
     if outputs.endswith(stop_str):
         outputs = outputs[: -len(stop_str)]
     outputs = outputs.strip()
+
+    output_file["outputs"] = outputs
+    # Write the output to a JSON file
+    from datetime import datetime
+    import json
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    with open(f"attention_weights_{timestamp}.json", "w") as file:
+        json.dump(output_file, file, indent=4)
+
     print(outputs)
 
 
