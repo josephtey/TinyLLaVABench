@@ -160,7 +160,7 @@ def eval_model(args):
     output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # Write the output to a text file
-    with open(f"{timestamp}_attention.txt", "w") as file:
+    with open(f"attention_results/{timestamp}_attention.txt", "w") as file:
         file.write(output_text)
 
     # Initialize an empty list to store the output
@@ -185,7 +185,7 @@ def eval_model(args):
     output_file["outputs"] = outputs
 
     # Write the output to a JSON file
-    with open(f"{timestamp}_attention_weights.json", "w") as file:
+    with open(f"attention_results/{timestamp}_attention_weights.json", "w") as file:
         json.dump(output_file, file, indent=4)
 
     print(outputs)
