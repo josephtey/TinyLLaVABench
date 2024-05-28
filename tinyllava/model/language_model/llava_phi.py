@@ -131,7 +131,7 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
                 _,
                 inputs_embeds,
                 _,
-                output_file_2,
+                output_file,
             ) = self.prepare_inputs_labels_for_multimodal(
                 inputs,
                 position_ids,
@@ -139,17 +139,17 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
                 None,
                 None,
                 images,
-                output_file,
+                output_file=output_file,
                 # image_sizes=image_sizes
             )
         else:
             inputs_embeds = self.get_model().embed_tokens(inputs)
 
-        print("OUTPUTFILE 2: ", output_file_2)
-        output_file_2["inputs_embeds"] = inputs_embeds.shape
+        print("OUTPUTFILE 2: ", output_file)
+        output_file["inputs_embeds"] = inputs_embeds.shape
 
         return {
-            "output_file": output_file_2,
+            "output_file": output_file,
             "main": super().generate(
                 position_ids=position_ids,
                 attention_mask=attention_mask,
