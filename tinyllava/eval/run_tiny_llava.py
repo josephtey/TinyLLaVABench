@@ -110,17 +110,15 @@ def eval_model(args):
     # image tensor
     output_file["image_tensor"] = images_tensor.shape
 
-    input_ids, output_file = (
-        tokenizer_image_token(
-            prompt,
-            tokenizer,
-            IMAGE_TOKEN_INDEX,
-            return_tensors="pt",
-            output_file=output_file,
-        )
-        .unsqueeze(0)
-        .cuda()
+    raw_inputs, output_file = tokenizer_image_token(
+        prompt,
+        tokenizer,
+        IMAGE_TOKEN_INDEX,
+        return_tensors="pt",
+        output_file=output_file,
     )
+
+    input_ids = raw_inputs.unsqueeze(0).cuda()
 
     output_file["input_ids"] = input_ids.shape
 
