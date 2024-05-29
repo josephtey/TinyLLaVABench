@@ -186,8 +186,10 @@ def eval_model(args):
         tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)
         for ids in output_ids
     ]
-    print("Generated Text:", output_words[0])
-    print("Length of output words:", len(output_words[0]))
+    output_file["output_tokens"] = output_words[0]
+    output_file["all_tokens"] = (
+        output_file["input_tokens"] + output_file["output_tokens"]
+    )
 
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()

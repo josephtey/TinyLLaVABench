@@ -216,10 +216,10 @@ def tokenizer_image_token(
 
     image_tokens = [f"image_{i}" for i in range(1, 730)]
 
-    with_image_tokens = input_text_tokens[0] + image_tokens + input_text_tokens[1]
+    input_tokens = input_text_tokens[0] + image_tokens + input_text_tokens[1]
 
     if output_file is not None:
-        output_file["with_image_tokens"] = with_image_tokens
+        output_file["input_tokens"] = input_tokens
 
     def insert_separator(X, sep):
         return [ele for sublist in zip(X, [sep] * len(X)) for ele in sublist][:-1]
