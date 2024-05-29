@@ -212,12 +212,14 @@ def tokenizer_image_token(
     output_file=None,
 ):
     prompt_chunks = [tokenizer(chunk).input_ids for chunk in prompt.split("<image>")]
-    string_tokens = [tokenizer.convert_ids_to_tokens(ids) for ids in prompt_chunks]
+    input_text_tokens = [tokenizer.convert_ids_to_tokens(ids) for ids in prompt_chunks]
 
-    print("PROMPT CHUNKS: ", string_tokens)
+    image_tokens = [f"image_{i}" for i in range(1, 730)]
+
+    with_image_tokens = input_text_tokens[0] + image_tokens + input_text_tokens[1]
 
     if output_file is not None:
-        output_file["prompt_chunks"] = prompt_chunks
+        output_file["with_image_tokens"] = with_image_tokens
 
     def insert_separator(X, sep):
         return [ele for sublist in zip(X, [sep] * len(X)) for ele in sublist][:-1]
