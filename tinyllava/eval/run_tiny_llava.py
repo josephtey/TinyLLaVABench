@@ -116,6 +116,8 @@ def eval_model(args):
         .cuda()
     )
 
+    words_array = [tokenizer.convert_ids_to_tokens(seq) for seq in input_ids]
+    output_file["input_text_tokens"] = words_array
     output_file["input_ids"] = input_ids.shape
 
     stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2

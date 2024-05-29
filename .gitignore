@@ -47,6 +47,9 @@ Thumbs.db
 *.mov
 *.wmv
 
+# PyTorch model files
+*.pt
+
 .ipynb_checkpoints
 __pycache__
 *.egg-info
@@ -57,4 +60,3 @@ playground/
 /venv
 /custom/checkpoints
 .env
-

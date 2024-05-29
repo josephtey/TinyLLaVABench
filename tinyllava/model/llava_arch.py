@@ -365,7 +365,7 @@ class LlavaMetaForCausalLM(ABC):
             )
 
             output_file["text_features"] = cur_input_embeds.shape
-            
+
             cur_input_embeds_no_im = torch.split(
                 cur_input_embeds, split_sizes, dim=0
             )  # insert them back!
