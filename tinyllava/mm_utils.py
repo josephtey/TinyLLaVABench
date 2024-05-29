@@ -205,10 +205,17 @@ def process_images(images, image_processor, model_cfg):
 
 
 def tokenizer_image_token(
-    prompt, tokenizer, image_token_index=IMAGE_TOKEN_INDEX, return_tensors=None
+    prompt,
+    tokenizer,
+    image_token_index=IMAGE_TOKEN_INDEX,
+    return_tensors=None,
+    output_file=None,
 ):
     prompt_chunks = [tokenizer(chunk).input_ids for chunk in prompt.split("<image>")]
     print("PROMPT CHUNKS: ", prompt_chunks)
+
+    if output_file is not None:
+        output_file["prompt_chunks"] = prompt_chunks
 
     def insert_separator(X, sep):
         return [ele for sublist in zip(X, [sep] * len(X)) for ele in sublist][:-1]
@@ -228,9 +235,9 @@ def tokenizer_image_token(
 
     if return_tensors is not None:
         if return_tensors == "pt":
-            return torch.tensor(input_ids, dtype=torch.long)
+            return torch.tensor(input_ids, dtype=torch.long), output_file
         raise ValueError(f"Unsupported tensor type: {return_tensors}")
-    return input_ids
+    return input_ids, output_file
 
 
 def get_model_name_from_path(model_path):

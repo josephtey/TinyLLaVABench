@@ -110,14 +110,18 @@ def eval_model(args):
     # image tensor
     output_file["image_tensor"] = images_tensor.shape
 
-    input_ids = (
-        tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt")
+    input_ids, output_file = (
+        tokenizer_image_token(
+            prompt,
+            tokenizer,
+            IMAGE_TOKEN_INDEX,
+            return_tensors="pt",
+            output_file=output_file,
+        )
         .unsqueeze(0)
         .cuda()
     )
 
-    words_array = [tokenizer.convert_ids_to_tokens(seq) for seq in input_ids]
-    output_file["input_text_tokens"] = words_array
     output_file["input_ids"] = input_ids.shape
 
     stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
