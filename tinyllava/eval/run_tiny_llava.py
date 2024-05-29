@@ -181,6 +181,10 @@ def eval_model(args):
                 }
             )
 
+    # Convert output_ids to the words themselves
+    output_words = tokenizer.convert_ids_to_tokens(output_ids)
+    print("Generated Text:", output_words)
+
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()
     if outputs.endswith(stop_str):

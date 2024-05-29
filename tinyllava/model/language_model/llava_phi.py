@@ -145,7 +145,6 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
         else:
             inputs_embeds = self.get_model().embed_tokens(inputs)
 
-        print("OUTPUTFILE 2: ", output_file)
         output_file["inputs_embeds"] = inputs_embeds.shape
 
         return {
