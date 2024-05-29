@@ -212,7 +212,9 @@ def tokenizer_image_token(
     output_file=None,
 ):
     prompt_chunks = [tokenizer(chunk).input_ids for chunk in prompt.split("<image>")]
-    print("PROMPT CHUNKS: ", prompt_chunks)
+    string_tokens = [tokenizer.convert_ids_to_tokens(ids) for ids in prompt_chunks]
+
+    print("PROMPT CHUNKS: ", string_tokens)
 
     if output_file is not None:
         output_file["prompt_chunks"] = prompt_chunks
