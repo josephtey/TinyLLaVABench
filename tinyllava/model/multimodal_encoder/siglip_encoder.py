@@ -537,6 +537,7 @@ class SigLipVisionTransformer(nn.Module):
         )
 
         last_hidden_state = encoder_outputs[0]
+        print("last hidden state shape: ", last_hidden_state.shape)
         last_hidden_state = self.post_layernorm(last_hidden_state)
 
         pooled_output = self.head(last_hidden_state)
