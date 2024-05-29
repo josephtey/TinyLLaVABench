@@ -525,7 +525,9 @@ class SigLipVisionTransformer(nn.Module):
             return_dict if return_dict is not None else self.config.use_return_dict
         )
 
+        print("pixel values for SIG shape: ", pixel_values.shape)
         hidden_states = self.embeddings(pixel_values)
+        print("hidden states for SIG shape: ", hidden_states.shape)
 
         encoder_outputs = self.encoder(
             inputs_embeds=hidden_states,
