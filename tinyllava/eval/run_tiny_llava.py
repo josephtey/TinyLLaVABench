@@ -149,6 +149,8 @@ def eval_model(args):
     output_ids = raw_output["main"].sequences
     attentions = raw_output["main"].attentions
 
+    torch.save(attentions, "attention_results/{timestamp}_attentions.pt")
+
     from datetime import datetime
     import json
 
