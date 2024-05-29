@@ -187,7 +187,7 @@ def eval_model(args):
         for ids in output_ids
     ]
     print("Generated Text:", output_words[0])
-    print("Length of output words:", len(output_words))
+    print("Length of output words:", len(output_words[0]))
 
     outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
     outputs = outputs.strip()
