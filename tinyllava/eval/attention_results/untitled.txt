@@ -1,0 +1,1 @@
+run_tiny_llava.py --image-file "https://global.discourse-cdn.com/business4/uploads/imagej/optimized/3X/d/3/d324c6e4bbef3e021a7dcac5f7f077085301b3cd_2_690x387.jpeg" --model-path="../../custom/checkpoints/pre-trained/TinyLLaVA-3.1B" --query "Describe this image"
