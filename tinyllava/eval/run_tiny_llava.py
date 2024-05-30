@@ -153,10 +153,11 @@ def eval_model(args):
     output_ids = raw_output["main"].sequences
     attentions = raw_output["main"].attentions
 
-    torch.save(attentions, f"attention_results/{timestamp}_attentions.pt")
-
     from datetime import datetime
     import json
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    torch.save(attentions, f"attention_results/{timestamp}_attentions.pt")
 
     output_text = ""
     for generated_token_index, attention in enumerate(attentions):
@@ -164,7 +165,6 @@ def eval_model(args):
             output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
 
     output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # Write the output to a text file
     with open(f"attention_results/{timestamp}_attention.txt", "w") as file:
         file.write(output_text)
