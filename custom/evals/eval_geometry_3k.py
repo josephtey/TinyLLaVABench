@@ -99,7 +99,7 @@ def run_inference(
         images_tensor = process_images([image], image_processor, model.config).to(
             model.device, dtype=torch.float16
         )
-        output_file["image_tensor"] = images_tensor
+        output_file["image_tensor"] = images_tensor.shape
         raw_inputs, output_file = tokenizer_image_token(
             prompt,
             tokenizer,
