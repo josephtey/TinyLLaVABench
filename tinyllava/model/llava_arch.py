@@ -370,15 +370,16 @@ class LlavaMetaForCausalLM(ABC):
                 cur_input_embeds, split_sizes, dim=0
             )  # insert them back!
 
-            # now, insert the image features that were previously encoded
             cur_new_input_embeds = []
             cur_new_labels = []
 
             for i in range(num_images + 1):
+                print("split " + str(i) + ": ", len(cur_input_embeds_no_im[i]))
                 cur_new_input_embeds.append(cur_input_embeds_no_im[i])
                 cur_new_labels.append(cur_labels_noim[i])
                 if i < num_images:
                     cur_image_features = image_features[cur_image_idx]
+                    print("image: ", len(cur_image_features))
                     cur_image_idx += 1
                     cur_new_input_embeds.append(cur_image_features)
                     cur_new_labels.append(
@@ -389,11 +390,12 @@ class LlavaMetaForCausalLM(ABC):
                             dtype=cur_labels.dtype,
                         )
                     )
-
             cur_new_input_embeds = [x.to(self.device) for x in cur_new_input_embeds]
 
             cur_new_input_embeds = torch.cat(cur_new_input_embeds)
             cur_new_labels = torch.cat(cur_new_labels)
+
+            print("total len: ", len(cur_new_input_embeds))
 
             new_input_embeds.append(cur_new_input_embeds)
             new_labels.append(cur_new_labels)
