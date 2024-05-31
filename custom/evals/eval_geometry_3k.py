@@ -189,7 +189,10 @@ def run_inference(
         if outputs.endswith(stop_str):
             outputs = outputs[: -len(stop_str)]
         outputs = outputs.strip()
-        extracted_answer = outputs
+
+        output_file["attention_description"] = attention_description
+        output_file["outputs"] = outputs
+
     else:
         with open(image_file, "rb") as image_file:
             image_data = image_file.read()
@@ -214,7 +217,6 @@ def run_inference(
                 ],
             )
             outputs = response.choices[0].message.content
-            extracted_answer = outputs
 
             # Extract token usage from the response
             total_tokens = response.usage.total_tokens
@@ -234,7 +236,7 @@ def run_inference(
             print(f"Error calling OpenAI API: {e}")
             return None, running_cost
 
-    return extracted_answer, running_cost
+    return outputs, running_cost
 
 
 def eval_model(args):
@@ -253,9 +255,10 @@ def eval_model(args):
 
     for index, item in enumerate(tqdm(data, desc="Processing items")):
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
-        extracted_answer, running_cost = run_inference(
+        outputs, running_cost = run_inference(
             item, image_file, args, model, tokenizer, image_processor, running_cost
         )
+        extracted_answer = outputs
         if extracted_answer is None:
             continue
 
@@ -359,6 +362,7 @@ if __name__ == "__main__":
         )
 
     if args.idx and args.single_run:
+        print("SINGLE RUN!")
         data_file = args.data_file
         with open(data_file, "r") as f:
             data = json.load(f)
