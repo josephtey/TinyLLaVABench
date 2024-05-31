@@ -490,7 +490,7 @@ class LlavaMetaForCausalLM(ABC):
         if _position_ids is None:
             position_ids = None
 
-        print("new input embeds: ", len(new_input_embeds))
+        print("new input embeds: ", len(new_input_embeds[0]))
         return (
             None,
             position_ids,
