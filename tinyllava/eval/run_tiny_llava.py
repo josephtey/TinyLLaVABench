@@ -145,12 +145,6 @@ def eval_model(args):
             output_file=output_file,
         )
 
-    # input_token_len = input_ids.shape[1]
-    # n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
-    # if n_diff_input_output > 0:
-    #     print(
-    #         f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids"
-    #     )
     output_file = raw_output["output_file"]
     output_ids = raw_output["main"].sequences
     attentions = raw_output["main"].attentions
