@@ -13,8 +13,8 @@ MODEL_PATH="./../checkpoints/fine-tuned/geometry_3k/TinyLLaVA-3.1B-lora-1"
 
 # results file
 RESULTS_FILE="./../../../multimodal-reasoning/results/files/results_geometry_3k_finetuned_$(date +%Y%m%d_%H%M%S).json"
-ATTENTION_FILE="./../../../multimodal-reasoning/results/files/attention_results/results_geometry_3k_finetuned_$(date +%Y%m%d_%H%M%S).json"
-ATTENTION_WEIGHTS_FILE="./../../../multimodal-reasoning/results/files/attention_results/results_geometry_3k_finetuned_$(date +%Y%m%d_%H%M%S).pt"
+ATTENTION_FILE="./../../../multimodal-reasoning/results/attention_results/results_geometry_3k_finetuned_$(date +%Y%m%d_%H%M%S).json"
+ATTENTION_WEIGHTS_FILE="./../../../multimodal-reasoning/results/attention_results/results_geometry_3k_finetuned_$(date +%Y%m%d_%H%M%S).pt"
 
 python -m eval_geometry_3k \
     --image-folder $IMAGE_FOLDER \
