@@ -26,5 +26,5 @@ python -m eval_geometry_3k \
     --attention-file $ATTENTION_FILE \
     --attention-weights-file $ATTENTION_WEIGHTS_FILE \
     --temperature 0 \
-    --conv-mode phi
+    --conv-mode phi \
     --single-run 
