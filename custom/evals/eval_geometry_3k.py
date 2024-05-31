@@ -63,6 +63,7 @@ def call_openai_api(*args, **kwargs):
 def run_inference(
     item, image_file, args, model, tokenizer, image_processor, running_cost=0
 ):
+    output_file = {}
     choices_str = ", ".join(
         [f"{chr(65 + i)}. {choice}" for i, choice in enumerate(item["choices"])]
     )
@@ -91,19 +92,24 @@ def run_inference(
     conv.append_message(conv.roles[0], qs)
     prompt = conv.get_prompt()
 
+    output_file["prompt"] = prompt
+
     if args.model_path != "gpt-o":
         image = load_image(image_file)
         images_tensor = process_images([image], image_processor, model.config).to(
             model.device, dtype=torch.float16
         )
-
-        input_ids = (
-            tokenizer_image_token(
-                prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt"
-            )
-            .unsqueeze(0)
-            .cuda()
+        output_file["image_tensor"] = images_tensor
+        raw_inputs, output_file = tokenizer_image_token(
+            prompt,
+            tokenizer,
+            IMAGE_TOKEN_INDEX,
+            return_tensors="pt",
+            output_file=output_file,
         )
+
+        input_ids = raw_inputs.unsqueeze(0).cuda()
+        output_file["input_ids"] = input_ids.shape
 
         stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
         keywords = [stop_str]
@@ -123,7 +129,7 @@ def run_inference(
                 stopping_criteria=[stopping_criteria],
                 output_attentions=True,
                 output_hidden_states=True,
-                output_file=args.attention_file,
+                output_file=output_file,
             )
 
         output_file = raw_output["output_file"]
@@ -359,6 +365,8 @@ if __name__ == "__main__":
 
         item = data[args.idx]
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
+
+        args.attention_file["image_file"] = image_file
 
         run_inference(item, image_file, args, model, tokenizer, image_processor)
     else:
