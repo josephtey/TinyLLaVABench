@@ -136,7 +136,7 @@ def run_inference(
         output_ids = raw_output["main"].sequences
         attentions = raw_output["main"].attentions
 
-        if args.single_run:
+        if args.single:
             torch.save(attentions, args.attention_weights_file)
 
             # output_text = ""
@@ -343,7 +343,7 @@ if __name__ == "__main__":
         help="Specify if baseline is true or false",
     )
     parser.add_argument(
-        "--single-run",
+        "--single",
         action="store_true",
         help="Specify if the script should run inference independently for a single image file",
     )
@@ -361,7 +361,7 @@ if __name__ == "__main__":
             args.model_path, args.model_base, model_name
         )
 
-    if args.idx and args.single_run:
+    if args.idx and args.single:
         print("SINGLE RUN!")
         data_file = args.data_file
         with open(data_file, "r") as f:
