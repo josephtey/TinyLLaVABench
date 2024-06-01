@@ -362,7 +362,7 @@ if __name__ == "__main__":
             args.model_path, args.model_base, model_name
         )
 
-    if args.idx and args.single:
+    if args.single:
         print("SINGLE RUN!")
         data_file = args.data_file
         with open(data_file, "r") as f:
