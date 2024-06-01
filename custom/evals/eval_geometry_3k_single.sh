@@ -3,7 +3,7 @@
 # data
 DATA_FILE="./../../../multimodal-reasoning/dataset/eval/geometry_3k/geometry_3k.json"
 IMAGE_FOLDER="./../../../multimodal-reasoning/dataset/eval/geometry_3k/images"
-IDX=0
+IDX=2
 
 # pretrained model
 MODEL_BASE="./../checkpoints/pre-trained/TinyLLaVA-3.1B"
