@@ -180,10 +180,6 @@ def run_inference(
             output_file["attention_description"] = attention_description
             output_file["outputs"] = outputs
 
-            # Write the output to a JSON file
-            with open(args.attention_file, "w") as file:
-                json.dump(output_file, file, indent=4)
-
         outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
         outputs = outputs.strip()
         if outputs.endswith(stop_str):
@@ -192,6 +188,10 @@ def run_inference(
 
         output_file["attention_description"] = attention_description
         output_file["outputs"] = outputs
+
+        # Write the output to a JSON file
+        with open(args.attention_file, "w") as file:
+            json.dump(output_file, file, indent=4)
 
     else:
         with open(image_file, "rb") as image_file:
@@ -372,6 +372,10 @@ if __name__ == "__main__":
 
         args.attention_file["image_file"] = image_file
 
-        run_inference(item, image_file, args, model, tokenizer, image_processor)
+        outputs, running_cost = run_inference(
+            item, image_file, args, model, tokenizer, image_processor
+        )
+
+        print("ATTENTION FILE: ", args.attention_file)
     else:
         eval_model(args)
