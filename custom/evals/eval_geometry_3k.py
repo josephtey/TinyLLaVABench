@@ -93,6 +93,7 @@ def run_inference(
     prompt = conv.get_prompt()
 
     output_file["prompt"] = prompt
+    output_file["image_file"] = image_file
 
     if args.model_path != "gpt-o":
         image = load_image(image_file)
@@ -369,8 +370,6 @@ if __name__ == "__main__":
 
         item = data[args.idx]
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
-
-        args.attention_file["image_file"] = image_file
 
         outputs, running_cost = run_inference(
             item, image_file, args, model, tokenizer, image_processor
