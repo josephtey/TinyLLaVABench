@@ -112,7 +112,7 @@ def eval_model(args):
     # image tensor
     output_file["image_tensor"] = images_tensor.shape
 
-    raw_inputs, output_file = tokenizer_image_token(
+    raw_inputs = tokenizer_image_token(
         prompt,
         tokenizer,
         IMAGE_TOKEN_INDEX,

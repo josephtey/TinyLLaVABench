@@ -241,7 +241,7 @@ def tokenizer_image_token(
         if return_tensors == "pt":
             return torch.tensor(input_ids, dtype=torch.long), output_file
         raise ValueError(f"Unsupported tensor type: {return_tensors}")
-    return input_ids, output_file
+    return input_ids
 
 
 def get_model_name_from_path(model_path):
