@@ -266,7 +266,7 @@ def eval_model(args):
     with open(results_file, "w") as f:
         f.write("[\n")
 
-    for index, item in enumerate(tqdm(data, desc="Processing items")):
+    for index, item in enumerate(tqdm(data[:100], desc="Processing items")):
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
         outputs, running_cost = run_inference(
             index,
