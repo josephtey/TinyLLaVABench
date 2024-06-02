@@ -110,15 +110,13 @@ def run_inference(
         qs = f"""Solve this problem, and return the answer at the end of your response, e.g. Answer: A, B, C or D\n
               Problem: {DEFAULT_IMAGE_TOKEN}\n
               {item['problem_text']}\n
-              Choices: {choices_str}"""
+              Choices: {choices_str} [label]"""
     else:
         if args.baseline_type == "direct":
             qs = f"""Please directly answer the question and provide the correct option letter, e.g., A, B, C, D.\n
                 Question: {DEFAULT_IMAGE_TOKEN}\n
                 {item['problem_text']}\n
-                Choices: {choices_str}
-
-                Answer:"""
+                Choices: {choices_str}"""
         elif args.baseline_type == "cot":
             qs = f"""Please first conduct reasoning, and then answer the question and provide the correct option letter, e.g., A, B, C, D, at the end.
                 Question: {DEFAULT_IMAGE_TOKEN}\n
@@ -131,6 +129,8 @@ def run_inference(
     conv.append_message(conv.roles[0], qs)
     prompt = conv.get_prompt()
 
+    print(qs)
+    
     output_file["prompt"] = prompt
     output_file["image_file"] = image_file
 
@@ -140,7 +140,7 @@ def run_inference(
             model.device, dtype=torch.float16
         )
         output_file["image_tensor"] = images_tensor.shape
-        raw_inputs, output_file = tokenizer_image_token(
+        raw_inputs = tokenizer_image_token(
             prompt,
             tokenizer,
             IMAGE_TOKEN_INDEX,
@@ -165,12 +165,12 @@ def run_inference(
                 num_beams=args.num_beams,
                 pad_token_id=tokenizer.pad_token_id,
                 max_new_tokens=args.max_new_tokens,
-                use_cache=False,
+                use_cache=True,
                 stopping_criteria=[stopping_criteria],
                 output_attentions=True,
                 output_file=output_file,
             )
-
+            
         output_file = raw_output["output_file"]
         output_ids = raw_output["main"].sequences
         attentions = raw_output["main"].attentions
@@ -266,7 +266,7 @@ def eval_model(args):
     with open(results_file, "w") as f:
         f.write("[\n")
 
-    for index, item in enumerate(tqdm(data[:100], desc="Processing items")):
+    for index, item in enumerate(tqdm(data, desc="Processing items")):
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
         outputs, running_cost = run_inference(
             index,
@@ -276,7 +276,7 @@ def eval_model(args):
             model,
             tokenizer,
             image_processor,
-            running_cost,
+            running_cost
         )
 
         # Answer Extraction
