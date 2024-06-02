@@ -279,9 +279,6 @@ def eval_model(args):
             image_processor,
             running_cost,
         )
-        extracted_answer = outputs
-        if extracted_answer is None:
-            continue
 
         # Answer Extraction
         choices_str = ", ".join(
@@ -291,7 +288,7 @@ def eval_model(args):
         
         Choices: {choices_str}
 
-        Detailed Answer: {extracted_answer}
+        Detailed Answer: {outputs}
 
         Letter Answer:"""
 
@@ -321,12 +318,12 @@ def eval_model(args):
         extracted_answer = response.choices[0].message.content
 
         print("Item: ", index)
-        print("Detailed Answer: ", extracted_answer)
+        print("Detailed Answer: ", outputs)
         print("Extracted Answer: ", extracted_answer)
         print("Running Cost: ", running_cost)
         print()  # Add a line break
 
-        item["predicted_answer"] = extracted_answer
+        item["predicted_answer"] = outputs
         item["extracted_answer"] = extracted_answer
         results.append(item)
 
