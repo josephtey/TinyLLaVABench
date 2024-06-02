@@ -5,6 +5,7 @@ import os
 import base64
 from tqdm import tqdm
 from datetime import datetime
+import gc
 
 from tinyllava.constants import (
     IMAGE_TOKEN_INDEX,
@@ -28,6 +29,7 @@ from io import BytesIO
 from openai import OpenAI
 from dotenv import load_dotenv
 import backoff
+import numpy as np
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -55,13 +57,50 @@ def load_images(image_files):
     return out
 
 
+def convert_raw_attentions_to_relevancy_map(attentions, num_decoders=32, num_heads=32):
+    attention_matrices = []
+
+    final_size = attentions[-1][0][0, 0, :].shape[1]
+
+    for decoder_no in range(num_decoders):
+        decoder_attention_matrices = []
+        for attention_head in range(num_heads):
+            attention_matrix = torch.zeros((final_size, final_size))
+
+            first_matrix = attentions[0][decoder_no][0, attention_head, :].clone()
+            first_matrix_height = first_matrix.shape[0]
+
+            # Insert the first_matrix into the top left corner of attention_matrix
+            attention_matrix[:first_matrix_height, : first_matrix.shape[1]] = (
+                first_matrix
+            )
+
+            for generated_token_index, attention in enumerate(attentions[1:], start=0):
+                new_token_row = attention[decoder_no][0, attention_head, :].clone()
+                new_token_row = torch.nn.functional.pad(
+                    new_token_row, (0, final_size - new_token_row.shape[1])
+                )
+
+                attention_matrix[first_matrix_height + generated_token_index] = (
+                    new_token_row
+                )
+
+            decoder_attention_matrices.append(attention_matrix)
+        attention_matrices.append(torch.stack(decoder_attention_matrices))
+
+        attention_matrices = np.array(torch.stack(attention_matrices).cpu())
+
+    average_attention_matrix = np.mean(attention_matrices, axis=(0, 1))
+    return average_attention_matrix
+
+
 @backoff.on_exception(backoff.expo, Exception, max_tries=5)
 def call_openai_api(*args, **kwargs):
     return client.chat.completions.create(*args, **kwargs)
 
 
 def run_inference(
-    item, image_file, args, model, tokenizer, image_processor, running_cost=0
+    idx, item, image_file, args, model, tokenizer, image_processor, running_cost=0
 ):
     output_file = {}
     choices_str = ", ".join(
@@ -137,49 +176,41 @@ def run_inference(
         output_ids = raw_output["main"].sequences
         attentions = raw_output["main"].attentions
 
-        if args.single:
-            torch.save(attentions, args.attention_weights_file)
+        # save the attention weights
+        attention_map = convert_raw_attentions_to_relevancy_map(attentions)
+        output_file["attention_map"] = attention_map.shape
 
-            # output_text = ""
-            # for generated_token_index, attention in enumerate(attentions):
-            #     for i, decoder_element in enumerate(attention):
-            #         output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
+        # output_text = ""
+        # for generated_token_index, attention in enumerate(attentions):
+        #     for i, decoder_element in enumerate(attention):
+        #         output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
 
-            # output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
-            # # Write the output to a text file
-            # with open(f"attention_results/{timestamp}_attention.txt", "w") as file:
-            #     file.write(output_text)
+        # output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
+        # # Write the output to a text file
+        # with open(f"attention_results/{timestamp}_attention.txt", "w") as file:
+        #     file.write(output_text)
 
-            # Initialize an empty list to store the output
-            attention_description = []
-            for generated_token_index, attention in enumerate(attentions):
-                for i, decoder_element in enumerate(attention):
-                    attention_description.append(
-                        {
-                            "generated_token_index": generated_token_index,
-                            "decoder_element_index": i,
-                            "decoder_element_shape": decoder_element.shape,
-                        }
-                    )
+        # Initialize an empty list to store the output
+        attention_description = []
+        for generated_token_index, attention in enumerate(attentions):
+            for i, decoder_element in enumerate(attention):
+                attention_description.append(
+                    {
+                        "generated_token_index": generated_token_index,
+                        "decoder_element_index": i,
+                        "decoder_element_shape": decoder_element.shape,
+                    }
+                )
 
-            # Convert output_ids to the words themselves
-            output_words = [
-                tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)
-                for ids in output_ids
-            ]
-            output_file["output_tokens"] = output_words[0]
-            output_file["all_tokens"] = (
-                output_file["input_tokens"] + output_file["output_tokens"]
-            )
-
-            outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
-            outputs = outputs.strip()
-            if outputs.endswith(stop_str):
-                outputs = outputs[: -len(stop_str)]
-            outputs = outputs.strip()
-
-            output_file["attention_description"] = attention_description
-            output_file["outputs"] = outputs
+        # Convert output_ids to the words themselves
+        output_words = [
+            tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)
+            for ids in output_ids
+        ]
+        output_file["output_tokens"] = output_words[0]
+        output_file["all_tokens"] = (
+            output_file["input_tokens"] + output_file["output_tokens"]
+        )
 
         outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
         outputs = outputs.strip()
@@ -191,8 +222,11 @@ def run_inference(
         output_file["outputs"] = outputs
 
         # Write the output to a JSON file
-        with open(args.attention_file, "w") as file:
+        with open(os.path.join(attention_folder, f"{idx}.json"), "w") as file:
             json.dump(output_file, file, indent=4)
+
+        del attentions, attention_map
+        gc.collect()
 
     else:
         with open(image_file, "rb") as image_file:
@@ -242,6 +276,7 @@ def run_inference(
 
 def eval_model(args):
     data_file = args.data_file
+    results_file = os.path.join(args.results_folder, "results.json")
 
     # Load data file
     with open(data_file, "r") as f:
@@ -251,13 +286,20 @@ def eval_model(args):
     running_cost = 0
 
     # Initialize results file with an opening bracket
-    with open(args.results_file, "w") as f:
+    with open(results_file, "w") as f:
         f.write("[\n")
 
     for index, item in enumerate(tqdm(data, desc="Processing items")):
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
         outputs, running_cost = run_inference(
-            item, image_file, args, model, tokenizer, image_processor, running_cost
+            index,
+            item,
+            image_file,
+            args,
+            model,
+            tokenizer,
+            image_processor,
+            running_cost,
         )
         extracted_answer = outputs
         if extracted_answer is None:
@@ -311,13 +353,13 @@ def eval_model(args):
         results.append(item)
 
         # Append result to file
-        with open(args.results_file, "a") as f:
+        with open(results_file, "a") as f:
             json.dump(item, f, indent=4)
             if index < len(data) - 1:
                 f.write(",\n")
 
     # Close the JSON array in the results file
-    with open(args.results_file, "a") as f:
+    with open(results_file, "a") as f:
         f.write("\n]")
 
 
@@ -327,7 +369,7 @@ if __name__ == "__main__":
     parser.add_argument("--model-base", type=str, default=None)
     parser.add_argument("--data-file", type=str, required=True)
     parser.add_argument("--image-folder", type=str, required=True)
-    parser.add_argument("--results-file", type=str, required=True)
+    parser.add_argument("--results-folder", type=str, required=True)
     parser.add_argument("--query", type=str, required=False)
     parser.add_argument("--conv-mode", type=str, default="phi")
     parser.add_argument("--sep", type=str, default=",")
@@ -349,9 +391,20 @@ if __name__ == "__main__":
         help="Specify if the script should run inference independently for a single image file",
     )
     parser.add_argument("--idx", type=int, required=False)
-    parser.add_argument("--attention-file", type=str, required=False)
-    parser.add_argument("--attention-weights-file", type=str, required=False)
     args = parser.parse_args()
+
+    # make folders for results if it doesn't exist yet
+    if not os.path.exists(args.results_folder):
+        os.makedirs(args.results_folder)
+
+    attention_folder = os.path.join(args.results_folder, "attention")
+    attention_weights_folder = os.path.join(args.results_folder, "attention_weights")
+
+    if not os.path.exists(attention_folder):
+        os.makedirs(attention_folder)
+
+    if not os.path.exists(attention_weights_folder):
+        os.makedirs(attention_weights_folder)
 
     if args.model_path != "gpt-o":
         # Model
@@ -372,9 +425,7 @@ if __name__ == "__main__":
         image_file = os.path.join(args.image_folder, item["image_id"] + ".png")
 
         outputs, running_cost = run_inference(
-            item, image_file, args, model, tokenizer, image_processor
+            0, item, image_file, args, model, tokenizer, image_processor
         )
-
-        print("ATTENTION FILE: ", args.attention_file)
     else:
         eval_model(args)
