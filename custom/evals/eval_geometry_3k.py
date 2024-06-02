@@ -178,7 +178,7 @@ def run_inference(
 
         # save the attention weights
         attention_map = convert_raw_attentions_to_relevancy_map(attentions)
-        torch.save(attention_map, os.path.join(attention_folder, f"{idx}.pt"))
+        torch.save(attention_map, os.path.join(attention_weights_folder, f"{idx}.pt"))
 
         # Convert output_ids to the words themselves
         output_words = [
