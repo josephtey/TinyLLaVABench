@@ -176,7 +176,7 @@ class LlavaMetaForCausalLM(ABC):
         if output_file is not None:
             output_file["post_mm_projector"] = image_features.shape
 
-        return image_features, output_file
+        return image_features
 
     def prepare_inputs_labels_for_multimodal(
         self,
@@ -204,7 +204,7 @@ class LlavaMetaForCausalLM(ABC):
             if type(images) is list:
                 images = [x.unsqueeze(0) if x.ndim == 3 else x for x in images]
             concat_images = torch.cat([image for image in images], dim=0)
-            image_features, output_file = self.encode_images(concat_images, output_file)
+            image_features = self.encode_images(concat_images)
             split_sizes = [image.shape[0] for image in images]
             image_features = torch.split(image_features, split_sizes, dim=0)
             mm_patch_merge_type = getattr(self.config, "mm_patch_merge_type", "flat")
@@ -277,7 +277,7 @@ class LlavaMetaForCausalLM(ABC):
                     f"Unexpected mm_patch_merge_type: {self.config.mm_patch_merge_type}"
                 )
         else:
-            image_features, output_file = self.encode_images(images, output_file)
+            image_features = self.encode_images(images)
 
             if output_file is not None:
                 output_file["image_features"] = image_features.shape
@@ -363,8 +363,8 @@ class LlavaMetaForCausalLM(ABC):
             cur_input_embeds = self.get_model().embed_tokens(
                 torch.cat(cur_input_ids_noim)
             )
-
-            output_file["text_features"] = cur_input_embeds.shape
+            if output_file is not None:
+                output_file["text_features"] = cur_input_embeds.shape
 
             cur_input_embeds_no_im = torch.split(
                 cur_input_embeds, split_sizes, dim=0
