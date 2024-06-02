@@ -202,8 +202,8 @@ def run_inference(
             json.dump(output_file, file, indent=4)
 
         del attentions, attention_map, images_tensor, input_ids, output_ids, raw_output
-        torch.cuda.empty_cache()
         gc.collect()
+        torch.cuda.empty_cache()
 
     else:
         with open(image_file, "rb") as image_file:
