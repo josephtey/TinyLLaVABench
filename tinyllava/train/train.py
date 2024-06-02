@@ -120,6 +120,9 @@ def train():
         padding_side="right",
         use_fast=False,
     )
+    tokenizer.add_tokens(["[rationale]", "[label]"])
+    model.resize_token_embeddings(len(tokenizer))
+
     tokenizer = init_tokenizer(tokenizer)
 
     if model_args.version == "v0":
