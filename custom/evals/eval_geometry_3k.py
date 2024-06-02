@@ -202,7 +202,8 @@ def run_inference(
         with open(os.path.join(attention_folder, f"{idx}.json"), "w") as file:
             json.dump(output_file, file, indent=4)
 
-        del attentions, attention_map
+        del attentions, attention_map, images_tensor, input_ids, output_ids, raw_output
+        torch.cuda.empty_cache()
         gc.collect()
 
     else:
