@@ -124,8 +124,8 @@ def train():
     tokenizer = init_tokenizer(tokenizer)
 
     # add two new tokens
-    smart_tokenizer_and_embedding_resize(
-        special_tokens_dict=dict(rationale_token="[rationale]", label_token="[label]"),
+    tokenizer_and_embedding_resize(
+        new_tokens=["[rationale]", "[label]"],
         tokenizer=tokenizer,
         model=model,
     )
