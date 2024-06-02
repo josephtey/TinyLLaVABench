@@ -88,7 +88,7 @@ def convert_raw_attentions_to_relevancy_map(attentions, num_decoders=32, num_hea
             decoder_attention_matrices.append(attention_matrix)
         attention_matrices.append(torch.stack(decoder_attention_matrices))
 
-        attention_matrices = np.array(torch.stack(attention_matrices).cpu())
+    attention_matrices = np.array(torch.stack(attention_matrices).cpu())
 
     average_attention_matrix = np.mean(attention_matrices, axis=(0, 1))
     return average_attention_matrix
