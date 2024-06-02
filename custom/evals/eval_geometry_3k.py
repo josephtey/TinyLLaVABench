@@ -168,7 +168,6 @@ def run_inference(
                 use_cache=False,
                 stopping_criteria=[stopping_criteria],
                 output_attentions=True,
-                output_hidden_states=True,
                 output_file=output_file,
             )
 
