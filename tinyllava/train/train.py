@@ -120,10 +120,15 @@ def train():
         padding_side="right",
         use_fast=False,
     )
-    tokenizer.add_tokens(["[rationale]", "[label]"])
-    model.resize_token_embeddings(len(tokenizer))
 
     tokenizer = init_tokenizer(tokenizer)
+
+    # add two new tokens
+    smart_tokenizer_and_embedding_resize(
+        special_tokens_dict=dict(rationale_token="[rationale]", label_token="[label]"),
+        tokenizer=tokenizer,
+        model=model,
+    )
 
     if model_args.version == "v0":
         if tokenizer.pad_token is None:
