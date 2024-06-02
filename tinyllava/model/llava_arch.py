@@ -498,7 +498,6 @@ class LlavaMetaForCausalLM(ABC):
             past_key_values,
             new_input_embeds,
             new_labels,
-            output_file,
         )
 
     def initialize_vision_tokenizer(self, model_args, tokenizer):

@@ -130,7 +130,6 @@ class TinyLlavaPhiForCausalLM(PhiForCausalLM, LlavaMetaForCausalLM):
                 _,
                 inputs_embeds,
                 _,
-                output_file,
             ) = self.prepare_inputs_labels_for_multimodal(
                 inputs,
                 position_ids,
