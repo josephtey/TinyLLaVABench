@@ -178,29 +178,7 @@ def run_inference(
 
         # save the attention weights
         attention_map = convert_raw_attentions_to_relevancy_map(attentions)
-        output_file["attention_map"] = attention_map.shape
-
-        # output_text = ""
-        # for generated_token_index, attention in enumerate(attentions):
-        #     for i, decoder_element in enumerate(attention):
-        #         output_text += f"Generated token index: {generated_token_index}, decoder element {i} shape: {decoder_element.shape}\n"
-
-        # output_text += f"ATTENTION SHAPE: {len(attentions)}\n"
-        # # Write the output to a text file
-        # with open(f"attention_results/{timestamp}_attention.txt", "w") as file:
-        #     file.write(output_text)
-
-        # Initialize an empty list to store the output
-        attention_description = []
-        for generated_token_index, attention in enumerate(attentions):
-            for i, decoder_element in enumerate(attention):
-                attention_description.append(
-                    {
-                        "generated_token_index": generated_token_index,
-                        "decoder_element_index": i,
-                        "decoder_element_shape": decoder_element.shape,
-                    }
-                )
+        output_file["attention_map"] = attention_map
 
         # Convert output_ids to the words themselves
         output_words = [
@@ -218,7 +196,6 @@ def run_inference(
             outputs = outputs[: -len(stop_str)]
         outputs = outputs.strip()
 
-        output_file["attention_description"] = attention_description
         output_file["outputs"] = outputs
 
         # Write the output to a JSON file
