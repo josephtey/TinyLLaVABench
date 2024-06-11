@@ -3,7 +3,7 @@
 # Assign the arguments to variables
 DATA_PATH="/piech/u/joetey/multimodal-reasoning/dataset/training/geometry_3k/geometry_3k_finetuning.json"
 IMAGE_PATH="/piech/u/joetey/multimodal-reasoning/dataset/training/geometry_3k/images/"
-OUTPUT_DIR="/piech/u/joetey/TinyLLaVABench/custom/checkpoints/fine-tuned/geometry_3k/TinyLLaVA-3.1B-lora-1"
+OUTPUT_DIR="/piech/u/joetey/TinyLLaVABench/custom/checkpoints/fine-tuned/geometry_3k/TinyLLaVA-3.1B-lora-5"
 
 deepspeed /piech/u/joetey/TinyLLaVABench/tinyllava/train/train.py \
     --deepspeed /piech/u/joetey/TinyLLaVABench/scripts/tiny_llava/zero3.json \

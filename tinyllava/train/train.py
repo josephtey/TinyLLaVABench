@@ -61,6 +61,13 @@ def train():
         (ModelArguments, DataArguments, TrainingArguments)
     )
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    print("freeze_backbone: ", model_args.freeze_backbone)
+    print("freeze_mm_mlp_adapter: ", training_args.freeze_mm_mlp_adapter)
+    print("tune_mm_mlp_adapter: ", training_args.tune_mm_mlp_adapter)
+    print("tune_vision_tower: ", training_args.tune_vision_tower)
+    print("tune_entire_model: ", training_args.tune_entire_model)
+
     local_rank = training_args.local_rank
     # 2. prepare model
     # 2.1 kbit & compute_dtype  ===>  model
