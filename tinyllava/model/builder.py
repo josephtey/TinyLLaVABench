@@ -72,6 +72,7 @@ def load_pretrained_model(
         print("Loading LLaVA from base model...")
         if "phi" in model_name.lower() or "3.1b" in model_name.lower():
             tokenizer = AutoTokenizer.from_pretrained(model_base, padding_side="right")
+            print("Loading special tokens ...")
             tokenizer.add_tokens(["[rationale]", "[label]"])
             model = TinyLlavaPhiForCausalLM.from_pretrained(
                 model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs
