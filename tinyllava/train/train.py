@@ -62,6 +62,8 @@ def train():
     )
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
+    print("model_args", model_args)
+    print("training_args", training_args)
     print("freeze_backbone: ", model_args.freeze_backbone)
     print("freeze_mm_mlp_adapter: ", training_args.freeze_mm_mlp_adapter)
     print("tune_mm_mlp_adapter: ", training_args.tune_mm_mlp_adapter)
