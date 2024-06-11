@@ -67,8 +67,8 @@ def train():
     print("freeze_backbone: ", model_args.freeze_backbone)
     print("freeze_mm_mlp_adapter: ", training_args.freeze_mm_mlp_adapter)
     print("tune_mm_mlp_adapter: ", model_args.tune_mm_mlp_adapter)
-    print("tune_vision_tower: ", training_args.tune_vision_tower)
-    print("tune_entire_model: ", training_args.tune_entire_model)
+    print("tune_vision_tower: ", model_args.tune_vision_tower)
+    print("tune_entire_model: ", model_args.tune_entire_model)
 
     local_rank = training_args.local_rank
     # 2. prepare model
